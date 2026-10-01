@@ -25,6 +25,9 @@ export default defineConfig({
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
+      devOptions: {
+        enabled: true,
+      },
       workbox: {
         globPatterns: ['**/*.{js,css,html,woff2,png,svg,json}'],
         runtimeCaching: [
@@ -47,6 +50,10 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    host: true,
+  },
+  preview: {
+    port: 4173,
     host: true,
   },
 });

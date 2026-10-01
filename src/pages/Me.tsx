@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TopBar } from '../components/layout/TopBar';
 import { useTheme } from '../context/ThemeContext';
 import { useUserRole, type UserRoleKind } from '../context/RoleContext';
@@ -11,6 +11,11 @@ import {
 } from '../components/ui/Icons';
 import './Me.css';
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
 export function MePage() {
   const { theme, setTheme } = useTheme();
   const { currentProfile, setRoleKind } = useUserRole();
@@ -18,6 +23,47 @@ export function MePage() {
 
   const [isCardFlipped, setIsCardFlipped] = useState(false);
   const [showRoleDrawer, setShowRoleDrawer] = useState(false);
+
+  // PWA Install & Local Network Share
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsInstalled(true);
+    }
+
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      if (choice.outcome === 'accepted') {
+        setIsInstalled(true);
+      }
+      setDeferredPrompt(null);
+    } else {
+      alert('To install Yuni PWA:\n• On iOS Safari: Tap Share ⎋ → "Add to Home Screen ⊞"\n• On Chrome/Android: Tap Menu ⋮ → "Install app"');
+    }
+  };
+
+  const localShareUrl = `http://10.10.15.186:5173/`;
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(localShareUrl);
+    setCopyFeedback(true);
+    setTimeout(() => setCopyFeedback(false), 3000);
+  };
 
   return (
     <>
@@ -249,6 +295,48 @@ export function MePage() {
                 <CheckCircleIcon size={11} strokeWidth={2.5} />
                 <span>Active</span>
               </span>
+            </div>
+
+            {/* Install PWA Item */}
+            <div className="me-setting-item">
+              <div>
+                <strong style={{ fontSize: 13.5 }}>Install Yuni App (PWA)</strong>
+                <p className="text-faint" style={{ fontSize: 12 }}>
+                  {isInstalled
+                    ? 'Installed as standalone app on device'
+                    : 'Add to home screen for offline clinical access'}
+                </p>
+              </div>
+              {isInstalled ? (
+                <span className="badge badge--synced">Installed ✓</span>
+              ) : (
+                <button
+                  className="btn btn--primary btn--sm btn-hop"
+                  onClick={handleInstallClick}
+                  type="button"
+                  style={{ fontSize: 12 }}
+                >
+                  Install App
+                </button>
+              )}
+            </div>
+
+            {/* Test With Friends (Local Wi-Fi Network) */}
+            <div className="me-setting-item">
+              <div>
+                <strong style={{ fontSize: 13.5 }}>Share With Friends (Local Wi-Fi)</strong>
+                <p className="text-faint" style={{ fontSize: 12, wordBreak: 'break-all' }}>
+                  <code>{localShareUrl}</code>
+                </p>
+              </div>
+              <button
+                className="btn btn--ghost btn--sm btn-hop"
+                onClick={handleCopyLink}
+                type="button"
+                style={{ fontSize: 12, minWidth: 95 }}
+              >
+                {copyFeedback ? '✓ Copied!' : 'Copy Link'}
+              </button>
             </div>
           </div>
         </section>
