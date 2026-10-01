@@ -1,0 +1,55 @@
+.me-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6) 0 var(--space-4);
+}
+
+.me-profile__info {
+  flex: 1;
+}
+
+.me-saris-btn {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.me-saris-note {
+  text-align: center;
+  font-size: 12px;
+  margin-top: var(--space-2);
+}
+
+.me-section {
+  margin-top: var(--space-6);
+}
+
+.me-settings {
+  display: grid;
+  gap: 1px;
+  margin-top: var(--space-3);
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.me-setting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+}
+
+.me-theme-toggle {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.me-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-8) 0 var(--space-4);
+}

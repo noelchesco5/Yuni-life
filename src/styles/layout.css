@@ -1,0 +1,110 @@
+/* Bottom navigation styles */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 8px calc(6px + var(--safe-bottom));
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:root[data-theme="dark"] .bottom-nav {
+  background: rgba(15, 23, 42, 0.92);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .bottom-nav {
+    background: rgba(15, 23, 42, 0.92);
+  }
+}
+
+.bottom-nav__item {
+  flex: 1;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--text-faint);
+  font: 700 11px var(--font-body);
+  text-decoration: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out);
+  position: relative;
+}
+
+.bottom-nav__item[aria-current="page"],
+.bottom-nav__item--active {
+  color: var(--yuni-blue);
+}
+
+.bottom-nav__item[aria-current="page"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background: var(--yuni-blue);
+  border-radius: 0 0 4px 4px;
+}
+
+.bottom-nav__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.bottom-nav__label {
+  font-size: 10px;
+  letter-spacing: 0.02em;
+}
+
+/* Page content area — leaves room for bottom nav */
+.page {
+  flex: 1;
+  padding-bottom: calc(72px + var(--safe-bottom));
+}
+
+.page__content {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+
+/* Top bar */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  padding-top: calc(var(--space-3) + var(--safe-top));
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.top-bar__title {
+  font: 800 20px var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.top-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}

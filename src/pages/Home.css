@@ -1,0 +1,25 @@
+.home-greeting {
+  padding: var(--space-6) 0 var(--space-4);
+}
+
+.home-greeting__text {
+  font: 800 28px var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.home-section {
+  margin-top: var(--space-5);
+}
+
+.home-next-class__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-sync {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+}

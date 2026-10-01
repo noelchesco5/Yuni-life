@@ -1,0 +1,36 @@
+.feed-filters {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-4) 0 var(--space-2);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.feed-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.feed-card {
+  margin-top: var(--space-3);
+}
+
+.feed-card__meta {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.feed-poll-options {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.feed-poll-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-3);
+}
