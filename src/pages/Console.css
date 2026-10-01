@@ -1,88 +1,305 @@
-.console-acting-as {
-  padding: var(--space-4) 0 var(--space-2);
+/* ==========================================================================
+   YUNI CONSOLE — SPEC 10 LEADER COMMAND DESK
+   ========================================================================== */
+
+.console-canvas {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 var(--space-4) 80px;
 }
 
-.console-acting-as__card {
-  background: #FFFFFF;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: var(--space-4);
-  box-shadow: var(--shadow-card);
-}
-
-.console-scope-chips {
+/* Toast alert */
+.console-toast {
   display: flex;
+  align-items: center;
   gap: 8px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-
-.console-alert-toast {
-  margin: var(--space-3) 0;
-  padding: 10px 14px;
-  background: rgba(16, 185, 129, 0.12);
-  color: var(--yuni-teal-deep);
+  background: #F0FDF4;
   border: 1px solid var(--yuni-teal);
+  color: #166534;
   border-radius: 12px;
-  font-size: 13px;
-  font-weight: 600;
+  padding: 10px 14px;
+  font: 600 12.5px/1.3 var(--font-body);
+  margin-top: var(--space-3);
   animation: fadeIn 0.2s ease-out;
 }
 
-.console-section {
+/* 1. Header Card */
+.console-header-card {
+  margin-top: var(--space-3);
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.console-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.console-header-tag {
+  font: 800 10px/1 var(--font-display);
+  letter-spacing: 0.08em;
+  color: var(--yuni-blue);
+  text-transform: uppercase;
+}
+
+.console-header-title {
+  font: 800 17px/1.2 var(--font-display);
+  color: var(--ink);
+  margin: 4px 0 2px;
+}
+
+.console-header-scope {
+  font: 500 12px/1.3 var(--font-body);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.console-header-scope code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--surface-2);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+.console-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--yuni-teal);
+  font: 800 10.5px/1 var(--font-display);
+  padding: 4px 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.console-delegation-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.console-acting-label {
+  font: 700 11px/1 var(--font-display);
+  color: var(--text-faint);
+}
+
+/* 2. Venue Rush Card */
+.console-rush-card {
+  margin-top: var(--space-4);
+  background: #FFFFFF;
+  border: 1.5px solid rgba(35, 71, 197, 0.2);
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 20px -6px rgba(35, 71, 197, 0.1);
+}
+
+.console-rush-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.console-rush-title {
+  font: 800 16px/1.2 var(--font-display);
+  color: var(--ink);
+  margin: 6px 0 2px;
+}
+
+.console-rush-sub {
+  font: 500 12px/1.3 var(--font-body);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.console-rush-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #FEF2F2;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.console-rush-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+}
+
+/* 3. Leadership Modules Grid */
+.console-tools-section {
   margin-top: var(--space-5);
 }
 
-.console-venue-rush-card {
-  margin-top: 8px;
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
+.console-section-subhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 
-.console-countdown-ring {
-  padding: 6px 12px;
-  background: #FFFFFF;
-  border-radius: 999px;
-  border: 1.5px solid var(--yuni-blue);
-  box-shadow: 0 2px 8px rgba(35, 71, 197, 0.12);
+.console-subhead-text {
+  font: 800 11.5px/1 var(--font-display);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
 }
 
-.console-tiles-grid {
+.console-tools-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-3);
-  margin-top: var(--space-3);
+  gap: 10px;
 }
 
-.console-tile {
+.console-tool-card {
   background: #FFFFFF;
   border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: var(--space-4);
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-out),
-              box-shadow var(--duration-fast) var(--ease-out);
+  transition: all 0.15s ease-out;
 }
 
-.console-tile:hover {
+.console-tool-card:hover {
+  border-color: var(--yuni-blue);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-elevated);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
 }
 
-.console-tile:active {
-  transform: translateY(1px) scale(0.98);
+.console-tool-card:active {
+  transform: scale(0.97);
 }
 
-.console-tile__icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+.console-tool-card--emergency:hover {
+  border-color: #DC2626;
+}
+
+.console-tool-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--surface-2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
   margin-bottom: 6px;
+}
+
+.console-tool-name {
+  font: 800 13px/1.2 var(--font-display);
+  color: var(--ink);
+}
+
+.console-tool-desc {
+  font: 500 11px/1.3 var(--font-body);
+  color: var(--text-faint);
+  margin: 0;
+}
+
+/* 4. Claims Queue */
+.console-claims-section {
+  margin-top: var(--space-5);
+}
+
+.console-claims-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.console-claim-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+/* Modal Windows */
+.console-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: fadeIn 0.15s ease-out;
+}
+
+.console-modal {
+  background: #FFFFFF;
+  border-radius: 20px;
+  max-width: 520px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.console-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.console-modal-body {
+  padding: 18px 20px 24px;
+}
+
+.console-modal-chips {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.console-notice-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font: 500 11.5px/1.4 var(--font-body);
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.console-audit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.console-audit-entry {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
 }

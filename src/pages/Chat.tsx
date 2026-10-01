@@ -1,88 +1,195 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { TopBar } from '../components/layout/TopBar';
 import { useUserRole } from '../context/RoleContext';
 import { Graffiti } from '../components/ui/Graffiti';
 import { MapSheet } from '../components/ui/MapSheet';
-import { MapPinIcon } from '../components/ui/Icons';
+import {
+  MapPinIcon,
+  LandmarkIcon,
+  UsersIcon,
+} from '../components/ui/Icons';
 import './Chat.css';
 
-interface Circle {
+interface Channel {
   id: string;
   name: string;
-  avatar: string;
+  category: 'official' | 'cohort' | 'dm';
+  avatarInitials: string;
   ringColor: 'blue' | 'sun' | 'teal';
+  subtitle: string;
+  badgeLabel?: string;
   unreadCount?: number;
 }
 
 interface Message {
   id: string;
+  channelId: string;
   senderName: string;
   senderHandle: string;
-  senderRoleColor: string; // CSS color for handle chip
+  senderRoleBadge?: string;
   isMe: boolean;
   time: string;
   body: string;
+  imageUrl?: string;
   sticker?: string;
   location?: { name: string; venueId: string };
 }
 
 export function ChatPage() {
   const { currentProfile } = useUserRole();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeChannelId, setActiveChannelId] = useState<string | null>('class-md2');
+  const [filter, setFilter] = useState<'all' | 'official' | 'cohort' | 'dm'>('all');
+  const [activeChannelId, setActiveChannelId] = useState<string>('class-md2');
   const [composerText, setComposerText] = useState('');
+  const [showStickerTray, setShowStickerTray] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [mapTargetVenue, setMapTargetVenue] = useState('lt-3');
 
-  // Top rail "Circles" (Spec 09 Section 7)
-  const circles: Circle[] = [
-    { id: 'off-welfare', name: 'Welfare Ministry', avatar: 'WM', ringColor: 'teal', unreadCount: 1 },
-    { id: 'class-md2', name: 'MD Year 2', avatar: 'MD', ringColor: 'blue', unreadCount: 3 },
-    { id: 'anat-grp', name: 'Anatomy L4', avatar: 'AN', ringColor: 'sun', unreadCount: 2 },
-    { id: 'dm-noel', name: 'Minister Noel', avatar: 'NC', ringColor: 'teal' },
-    { id: 'sports-fc', name: 'MUHAS FC', avatar: 'FC', ringColor: 'blue' },
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Channels list
+  const channels: Channel[] = [
+    {
+      id: 'off-welfare',
+      name: 'Welfare Ministry',
+      category: 'official',
+      avatarInitials: 'WM',
+      ringColor: 'teal',
+      subtitle: 'Official announcements & emergency notices',
+      badgeLabel: 'Official',
+      unreadCount: 1,
+    },
+    {
+      id: 'class-md2',
+      name: 'MD Year 2 Cohort',
+      category: 'cohort',
+      avatarInitials: 'MD',
+      ringColor: 'blue',
+      subtitle: 'Class discussions · Moderated by CR David',
+      badgeLabel: 'Cohort',
+      unreadCount: 2,
+    },
+    {
+      id: 'anat-grp',
+      name: 'Anatomy L4 Dissection',
+      category: 'cohort',
+      avatarInitials: 'AN',
+      ringColor: 'sun',
+      subtitle: 'Histology & Gross Anatomy spot prep',
+      badgeLabel: 'Practical',
+    },
+    {
+      id: 'dm-noel',
+      name: 'Minister Noel Chesco',
+      category: 'dm',
+      avatarInitials: 'NC',
+      ringColor: 'teal',
+      subtitle: 'Welfare & emergency allocations desk',
+      badgeLabel: 'Leader',
+    },
+    {
+      id: 'sports-fc',
+      name: 'MUHAS Football Club',
+      category: 'cohort',
+      avatarInitials: 'FC',
+      ringColor: 'blue',
+      subtitle: 'Fixtures, team training & derby roster',
+      badgeLabel: 'Sports',
+    },
   ];
 
-  // Wall-style conversation messages (Spec 09 Section 7: "single column, everyone left-aligned, yellow smile-underline on your messages")
+  // Channel-specific messages
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'm-1',
+      channelId: 'class-md2',
       senderName: 'David Kweka',
       senderHandle: '@CR_David',
-      senderRoleColor: 'var(--yuni-teal)',
+      senderRoleBadge: 'Class Rep',
       isMe: false,
       time: '11:15',
-      body: 'Habari everyone! Please note that Physiology lecture has shifted to LT 3 at 12:00 due to lab setup.',
-    },
-    {
-      id: 'm-2',
-      senderName: 'Noel Chesco',
-      senderHandle: '@Minister_Welfare',
-      senderRoleColor: 'var(--yuni-blue)',
-      isMe: false,
-      time: '11:20',
-      body: 'Confirmed from Ministry. Claim window for next week revisions opens on the Console at 12:00.',
+      body: 'Habari everyone! Please note that Physiology lecture has shifted to LT 3 at 12:00 today due to laboratory maintenance.',
       location: { name: 'Lecture Theatre 3 (LT 3)', venueId: 'lt-3' },
     },
     {
+      id: 'm-2',
+      channelId: 'class-md2',
+      senderName: 'Dr. Mwakyoma',
+      senderHandle: '@Mwakyoma_Anat',
+      senderRoleBadge: 'Faculty',
+      isMe: false,
+      time: '11:20',
+      body: 'Anatomy dissection hall specimens are ready for spot revision. Bring clean coats and gloves.',
+      imageUrl: '/images/anatomy_lab.jpg',
+      location: { name: 'Histology & Pathology Lab', venueId: 'path-lab' },
+    },
+    {
       id: 'm-3',
+      channelId: 'class-md2',
       senderName: currentProfile.name,
       senderHandle: `@${currentProfile.name.split(' ')[0].toLowerCase()}`,
-      senderRoleColor: 'var(--ink)',
       isMe: true,
       time: '11:22',
-      body: 'Asante sana! Are the practical dissection manuals ready at the bookshop?',
+      body: 'Asante sana! Are the practical dissection manuals ready at the campus bookshop?',
+    },
+    {
+      id: 'm-4',
+      channelId: 'off-welfare',
+      senderName: 'Noel Chesco',
+      senderHandle: '@Minister_Welfare',
+      senderRoleBadge: 'Minister',
+      isMe: false,
+      time: '09:00',
+      body: 'Official notice: Mid-semester lecture theatre booking window opens at 12:00 today for all registered Class Representatives.',
+      imageUrl: '/images/campus_students.jpg',
+      location: { name: 'Clinical Complex LT 3', venueId: 'lt-3' },
+    },
+    {
+      id: 'm-5',
+      channelId: 'sports-fc',
+      senderName: 'Sports Ministry',
+      senderHandle: '@Sports_Desk',
+      senderRoleBadge: 'Sports',
+      isMe: false,
+      time: '08:30',
+      body: 'Kickoff at 16:30! MD Year 2 takes on BPharm in the inter-faculty derby.',
+      imageUrl: '/images/football_derby.jpg',
+      location: { name: 'Main Football Pitch', venueId: 'pitch-main' },
+    },
+    {
+      id: 'm-6',
+      channelId: 'dm-noel',
+      senderName: 'Noel Chesco',
+      senderHandle: '@Minister_Welfare',
+      senderRoleBadge: 'Minister',
+      isMe: false,
+      time: 'Yesterday',
+      body: 'Habari Emmanuel! Let me know if your cohort requires extra evening lighting for the clinical exam preparation rooms.',
     },
   ]);
+
+  const activeChannel = channels.find((c) => c.id === activeChannelId) || channels[0];
+
+  const filteredChannels = channels.filter((c) => {
+    if (filter === 'official') return c.category === 'official';
+    if (filter === 'cohort') return c.category === 'cohort';
+    if (filter === 'dm') return c.category === 'dm';
+    return true;
+  });
+
+  const visibleMessages = messages.filter((m) => m.channelId === activeChannelId);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [visibleMessages.length, activeChannelId]);
 
   const handleSendMessage = () => {
     if (!composerText.trim()) return;
 
     const newMsg: Message = {
       id: `m-${Date.now()}`,
+      channelId: activeChannelId,
       senderName: currentProfile.name,
       senderHandle: `@${currentProfile.name.split(' ')[0].toLowerCase()}`,
-      senderRoleColor: 'var(--ink)',
       isMe: true,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       body: composerText.trim(),
@@ -95,15 +202,16 @@ export function ChatPage() {
   const handleSendSticker = (stickerTag: string) => {
     const newMsg: Message = {
       id: `m-${Date.now()}`,
+      channelId: activeChannelId,
       senderName: currentProfile.name,
       senderHandle: `@${currentProfile.name.split(' ')[0].toLowerCase()}`,
-      senderRoleColor: 'var(--ink)',
       isMe: true,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       body: '',
       sticker: stickerTag,
     };
     setMessages((prev) => [...prev, newMsg]);
+    setShowStickerTray(false);
   };
 
   return (
@@ -111,127 +219,165 @@ export function ChatPage() {
       <TopBar
         title="Chat"
         actions={
-          <span className="badge badge--synced" style={{ fontSize: 11 }}>
-            Realtime
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span className="badge badge--synced" style={{ fontSize: 10.5 }}>
+              Live
+            </span>
+          </div>
         }
       />
 
-      <div className="page__content chat-container">
-        {/* Search Bar */}
-        <div className="chat-search">
-          <input
-            className="input chat-search-input"
-            type="text"
-            placeholder="Search student, CR, or group..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      <div className="chat-canvas">
+        {/* Top Channel Rail (Circles) */}
+        <div className="chat-circles-strip" role="tablist" aria-label="Channels">
+          {filteredChannels.map((c) => {
+            const isActive = activeChannelId === c.id;
+            return (
+              <button
+                key={c.id}
+                className={`chat-circle-node ${isActive ? 'chat-circle-node--active' : ''}`}
+                onClick={() => setActiveChannelId(c.id)}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+              >
+                <div className={`chat-circle-avatar chat-circle-avatar--${c.ringColor}`}>
+                  <span>{c.avatarInitials}</span>
+                  {c.unreadCount && <span className="chat-circle-unread">{c.unreadCount}</span>}
+                </div>
+                <span className="chat-circle-title">{c.name.split(' ')[0]}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Top Rail Circles (Spec 09 Section 7) */}
-        <div className="chat-circles-rail">
-          {circles.map((c) => (
+        {/* Channel Categories Filter */}
+        <div className="chat-filter-bar">
+          {(
+            [
+              { key: 'all', label: 'All' },
+              { key: 'official', label: 'Official' },
+              { key: 'cohort', label: 'Cohort' },
+              { key: 'dm', label: 'Direct' },
+            ] as const
+          ).map((t) => (
             <button
-              key={c.id}
-              className={`chat-circle-item ${activeChannelId === c.id ? 'chat-circle-item--active' : ''}`}
-              onClick={() => setActiveChannelId(c.id)}
+              key={t.key}
+              className={`chat-filter-chip ${filter === t.key ? 'chat-filter-chip--active' : ''}`}
+              onClick={() => setFilter(t.key)}
               type="button"
             >
-              <div className={`chat-circle-avatar chat-circle-avatar--${c.ringColor}`}>
-                <span>{c.avatar}</span>
-                {c.unreadCount && <span className="chat-circle-badge">{c.unreadCount}</span>}
-              </div>
-              <span className="chat-circle-name">{c.name.split(' ')[0]}</span>
+              {t.label}
             </button>
           ))}
         </div>
 
-        {/* Section Header: Wall Style */}
-        <div className="chat-wall-header">
-          <div>
-            <strong style={{ fontSize: 15 }}># MD Year 2 Cohort</strong>
-            <p className="text-faint" style={{ fontSize: 12 }}>
-              Official class discussion · Moderated by CR
-            </p>
-          </div>
-          <span className="badge badge--blue" style={{ fontSize: 10 }}>Cohort</span>
-        </div>
-
-        {/* Wall Style Conversation View (Spec 09 Section 7) */}
-        <div className="chat-messages-wall">
-          {messages.map((m) => (
-            <div key={m.id} className="chat-wall-msg">
-              <div className="chat-wall-msg__meta">
-                <span
-                  className="chat-handle-chip"
-                  style={{ borderColor: m.senderRoleColor, color: m.senderRoleColor }}
-                >
-                  {m.senderHandle}
-                </span>
-                <span className="chat-sender-name">{m.senderName}</span>
-                <span className="text-faint" style={{ fontSize: 11 }}>
-                  {m.time}
-                </span>
-              </div>
-
-              {/* Message Body */}
-              {m.body && (
-                <div className="chat-wall-msg__body">
-                  <p>{m.body}</p>
-                  {/* Your messages get a small yellow smile-underline (Spec 09 Section 7) */}
-                  {m.isMe && (
-                    <div style={{ marginTop: 2 }}>
-                      <Graffiti type="smile-underline" color="var(--yuni-sun)" width={60} height={8} />
-                    </div>
-                  )}
-                </div>
+        {/* Active Channel Banner */}
+        <div className="chat-channel-banner">
+          <div className="chat-channel-banner__info">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {activeChannel.category === 'official' ? (
+                <LandmarkIcon size={14} color="var(--yuni-blue)" strokeWidth={2.2} />
+              ) : (
+                <UsersIcon size={14} color="var(--ink)" strokeWidth={2} />
               )}
-
-              {/* Sticker Message */}
-              {m.sticker && (
-                <div className="chat-wall-sticker">
-                  <span className="chat-sticker-large">{m.sticker}</span>
-                </div>
-              )}
-
-              {/* Shared Location Pin */}
-              {m.location && (
-                <button
-                  className="chat-location-card"
-                  onClick={() => {
-                    setMapTargetVenue(m.location!.venueId);
-                    setIsMapOpen(true);
-                  }}
-                  type="button"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                >
-                  <MapPinIcon size={14} strokeWidth={2.2} color="var(--yuni-blue)" />
-                  <strong>{m.location.name}</strong>
-                  <span style={{ fontSize: 11, color: 'var(--yuni-blue)', marginLeft: 4 }}>
-                    · Open Directions &rarr;
-                  </span>
-                </button>
-              )}
+              <h2 className="chat-channel-banner__title">{activeChannel.name}</h2>
             </div>
-          ))}
+            <p className="chat-channel-banner__sub">{activeChannel.subtitle}</p>
+          </div>
+          {activeChannel.badgeLabel && (
+            <span className="badge badge--blue" style={{ fontSize: 10 }}>
+              {activeChannel.badgeLabel}
+            </span>
+          )}
         </div>
 
-        {/* Composer Bar with Sticker Tray (Spec 09 Section 7) */}
-        <div className="chat-composer-box">
-          <div className="chat-sticker-shortcuts">
-            {['Hop!', 'Mambo!', 'Poa', 'Sawa!', 'Vipi', 'Tuko LT'].map((s) => (
-              <button
-                key={s}
-                className="chip chip--sm"
-                onClick={() => handleSendSticker(s)}
-                type="button"
-                style={{ fontSize: 11, minHeight: 24, padding: '0 8px' }}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+        {/* Conversation Stream (Wall Style) */}
+        <div className="chat-wall-stream" role="log">
+          {visibleMessages.length === 0 ? (
+            <div className="chat-empty-state">
+              <p className="text-faint">No messages in this channel yet.</p>
+              <span style={{ fontSize: 12, color: 'var(--yuni-blue)' }}>Start the conversation below</span>
+            </div>
+          ) : (
+            visibleMessages.map((m) => (
+              <article key={m.id} className="chat-message-row">
+                <div className="chat-message-meta">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span className="chat-sender-name">{m.senderName}</span>
+                    {m.senderRoleBadge && (
+                      <span className="chat-role-badge">{m.senderRoleBadge}</span>
+                    )}
+                  </div>
+                  <span className="chat-timestamp">{m.time}</span>
+                </div>
+
+                {/* Message Body */}
+                {m.body && (
+                  <div className="chat-bubble">
+                    <p className="chat-bubble-text">{m.body}</p>
+                    {/* Your messages get a small yellow smile-underline (Spec 09 Section 7) */}
+                    {m.isMe && (
+                      <div style={{ marginTop: 2 }}>
+                        <Graffiti type="smile-underline" color="var(--yuni-sun)" width={50} height={7} />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Optional Image Attachment */}
+                {m.imageUrl && (
+                  <div className="chat-image-wrap">
+                    <img src={m.imageUrl} alt="Attachment" className="chat-image" loading="lazy" />
+                  </div>
+                )}
+
+                {/* Sticker Dispatch */}
+                {m.sticker && (
+                  <div className="chat-sticker-render">
+                    <span className="chat-sticker-tag">{m.sticker}</span>
+                  </div>
+                )}
+
+                {/* Location Attachment */}
+                {m.location && (
+                  <button
+                    className="chat-location-pill"
+                    onClick={() => {
+                      setMapTargetVenue(m.location!.venueId);
+                      setIsMapOpen(true);
+                    }}
+                    type="button"
+                  >
+                    <MapPinIcon size={14} color="var(--yuni-blue)" strokeWidth={2.2} />
+                    <span>{m.location.name}</span>
+                    <span className="chat-location-cta">Directions →</span>
+                  </button>
+                )}
+              </article>
+            ))
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Clean Composer Bar */}
+        <div className="chat-composer-deck">
+          {/* Collapsible Sticker Tray */}
+          {showStickerTray && (
+            <div className="chat-sticker-tray">
+              {['Hop!', 'Mambo!', 'Poa', 'Sawa!', 'Vipi', 'Tuko LT 3', 'On My Way', 'Spot Exam'].map((s) => (
+                <button
+                  key={s}
+                  className="chip chip--sm"
+                  onClick={() => handleSendSticker(s)}
+                  type="button"
+                  style={{ fontSize: 11.5 }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
 
           <form
             className="chat-composer-form"
@@ -240,17 +386,29 @@ export function ChatPage() {
               handleSendMessage();
             }}
           >
+            <button
+              type="button"
+              className={`chat-sticker-toggle ${showStickerTray ? 'chat-sticker-toggle--active' : ''}`}
+              onClick={() => setShowStickerTray(!showStickerTray)}
+              title="Campus Quick Tags"
+              aria-label="Toggle stickers"
+            >
+              <Graffiti type="sparkle" color="var(--yuni-sun)" width={14} height={14} />
+            </button>
+
             <input
-              className="input chat-composer-input"
+              className="chat-composer-input"
               type="text"
-              placeholder="Message #MD Year 2..."
+              placeholder={`Message ${activeChannel.name}...`}
               value={composerText}
               onChange={(e) => setComposerText(e.target.value)}
             />
+
             <button
-              className="btn btn--primary btn--sm"
+              className="chat-send-btn"
               type="submit"
               disabled={!composerText.trim()}
+              aria-label="Send message"
             >
               Send
             </button>
@@ -258,7 +416,7 @@ export function ChatPage() {
         </div>
       </div>
 
-      {/* MapSheet for shared locations */}
+      {/* MapSheet */}
       <MapSheet
         isOpen={isMapOpen}
         mode="navigate"

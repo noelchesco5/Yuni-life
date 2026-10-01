@@ -30,6 +30,8 @@ interface FeedPost {
   scope: string;
   time: string;
   body: string;
+  imageUrl?: string;
+  imageAlt?: string;
   location?: { name: string; venueId: string };
   reactions: Record<string, number>;
   userReaction?: string;
@@ -143,7 +145,7 @@ export function HomePage() {
   // Feed filter
   const [feedFilter, setFeedFilter] = useState<'all' | 'my_cohort' | 'sports' | 'official'>('all');
 
-  // Feed posts with professional reactions (Zero emojis!)
+  // Feed posts with professional reactions and authentic campus imagery
   const [feedPosts, setFeedPosts] = useState<FeedPost[]>([
     {
       id: 'post-1',
@@ -152,8 +154,10 @@ export function HomePage() {
       scope: 'Global · MUHAS All Students',
       time: '15m ago',
       body: 'Mid-semester revision lecture theatre allocation window opens at 12:00 today. All Class Representatives (CRs) should prepare their class schedules and submit priority slot requests.',
+      imageUrl: '/images/campus_students.jpg',
+      imageAlt: 'MUHAS students collaborating under campus trees',
       location: { name: 'Lecture Theatre 3 (LT 3)', venueId: 'lt-3' },
-      reactions: { 'Hop!': 42, 'Endorse': 28, 'Spot': 14 },
+      reactions: { 'Hop!': 48, 'Endorse': 32, 'Spot': 19 },
     },
     {
       id: 'post-2',
@@ -162,8 +166,22 @@ export function HomePage() {
       scope: 'MD Year 2',
       time: '1h ago',
       body: 'Cranial nerves revision specimens have been set out in Anatomy Dissection Hall B. Spot-exam practice stations are open for self-study from Friday 14:00.',
+      imageUrl: '/images/anatomy_lab.jpg',
+      imageAlt: 'Medical students in teal scrubs in the Anatomy practical laboratory',
       location: { name: 'Histology & Pathology Lab', venueId: 'path-lab' },
-      reactions: { 'Hop!': 36, 'Endorse': 51, 'Spot': 19 },
+      reactions: { 'Hop!': 56, 'Endorse': 64, 'Spot': 27 },
+    },
+    {
+      id: 'post-3',
+      author: 'Sports & Entertainment Ministry',
+      officialTitle: 'Minister, Sports & Entertainment',
+      scope: 'Sports · All Campuses',
+      time: '3h ago',
+      body: 'MUHAS Inter-Year Derby kickoff is confirmed for 16:30 today at the Main Football Pitch. MD Year 2 takes on BPharm in the championship semi-final. Come support your cohort!',
+      imageUrl: '/images/football_derby.jpg',
+      imageAlt: 'MUHAS student football match on main pitch',
+      location: { name: 'Main Football Pitch', venueId: 'pitch-main' },
+      reactions: { 'Hop!': 89, 'Endorse': 42, 'Spot': 15 },
     },
   ]);
 
@@ -497,6 +515,18 @@ export function HomePage() {
                 </div>
 
                 <p className="home-post-body">{post.body}</p>
+
+                {/* Optional Campus Photo Attachment */}
+                {post.imageUrl && (
+                  <div className="home-post-image-wrap">
+                    <img
+                      src={post.imageUrl}
+                      alt={post.imageAlt || 'Campus dispatch'}
+                      className="home-post-image"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
 
                 {/* Location Attachment */}
                 {post.location && (

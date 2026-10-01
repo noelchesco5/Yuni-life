@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { TopBar } from '../components/layout/TopBar';
 import { useUserRole } from '../context/RoleContext';
 import { MapSheet } from '../components/ui/MapSheet';
-import { Graffiti } from '../components/ui/Graffiti';
 import {
   MegaphoneIcon,
-  LandmarkIcon,
   ClockIcon,
   BarChartIcon,
-  UsersIcon,
   ShieldCheckIcon,
+  AlertCircleIcon,
+  CheckCircleIcon,
+  BookOpenIcon,
 } from '../components/ui/Icons';
 import type { Venue } from '../lib/venues';
 import './Console.css';
@@ -26,17 +26,51 @@ interface ClaimWindow {
   totalSlots: number;
 }
 
+interface VenueClaimRequest {
+  id: string;
+  crName: string;
+  cohort: string;
+  venue: string;
+  slot: string;
+  status: 'pending' | 'approved' | 'rejected';
+}
+
+interface AcademicClashTicket {
+  id: string;
+  cohort: string;
+  subject: string;
+  description: string;
+  status: 'open' | 'resolving' | 'resolved';
+  submittedBy: string;
+}
+
+interface AuditLogEntry {
+  id: string;
+  timestamp: string;
+  actor: string;
+  role: string;
+  action: string;
+  target: string;
+}
+
 export function ConsolePage() {
   const { currentProfile, actingTitle, setActingTitle } = useUserRole();
+
+  // Active module modal states
+  const [activeModal, setActiveModal] = useState<
+    'announce' | 'emergency' | 'window-manager' | 'academic-desk' | 'safe-reports' | 'audit' | null
+  >(null);
+
+  // Map Sheet
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [selectedVenueForClaim, setSelectedVenueForClaim] = useState<string | undefined>('lt-3');
 
-  // Simulated live claim window for the "Venue Rush" flagship moment
+  // Simulated live claim window for the "Venue Rush"
   const [claimWindow, setClaimWindow] = useState<ClaimWindow>({
     id: 'win-1',
     name: 'Mid-Semester Revision Window',
     venueName: 'LT 1, LT 2, LT 3, MPH',
-    opensInSec: 42,
+    opensInSec: 38,
     fairness: 'First-Come First-Served',
     eligible: 'MD Year 2 & 3 CRs',
     status: 'countdown',
@@ -44,174 +78,617 @@ export function ConsolePage() {
     totalSlots: 6,
   });
 
-  const [claimedNotice, setClaimedNotice] = useState<string | null>(null);
+  // Incoming Venue Claim Requests (Welfare Minister view)
+  const [claimsQueue, setClaimsQueue] = useState<VenueClaimRequest[]>([
+    { id: 'clm-1', crName: 'David Kweka', cohort: 'MD Year 2', venue: 'LT 3', slot: 'Thursday 12:00 - 14:00', status: 'pending' },
+    { id: 'clm-2', crName: 'Sarah M.', cohort: 'BPharm Year 1', venue: 'LT 1', slot: 'Thursday 12:00 - 14:00', status: 'approved' },
+  ]);
+
+  // Academic Clash Tickets (Education Ministry view)
+  const [clashes, setClashes] = useState<AcademicClashTicket[]>([
+    {
+      id: 't-1',
+      cohort: 'MD Year 2',
+      subject: 'Physiology & Anatomy Practical Overlap',
+      description: 'Cardiovascular lecture clashes with Gross Anatomy Lab B dissection slot on Friday morning.',
+      status: 'resolving',
+      submittedBy: 'David Kweka (CR)',
+    },
+  ]);
+
+  // Audit Log Entries
+  const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([
+    { id: 'log-1', timestamp: '11:42', actor: 'Noel Chesco', role: 'Minister, Welfare', action: 'Opened Venue Claim Window', target: 'LT 1-3 Revision 2026' },
+    { id: 'log-2', timestamp: '11:45', actor: 'David Kweka', role: 'CR MD Year 2', action: 'Submitted Slot Claim', target: 'LT 3 (Thursday 12:00)' },
+    { id: 'log-3', timestamp: '09:10', actor: 'Chief Secretary', role: 'Chief Secretary', action: 'Approved Global Broadcast', target: 'Mid-Semester Roster' },
+  ]);
+
+  // Form states
+  const [announceScope, setAnnounceScope] = useState<'cohort' | 'ministry' | 'global'>('cohort');
+  const [announceTitle, setAnnounceTitle] = useState('');
+  const [announceBody, setAnnounceBody] = useState('');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Emergency form
+  const [emergencySeverity, setEmergencySeverity] = useState<'high_alert' | 'drill'>('high_alert');
+  const [emergencyReason, setEmergencyReason] = useState('');
+  const [emergencyConfirmed, setEmergencyConfirmed] = useState(false);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
 
   const handleClaimVenue = (venue: Venue) => {
-    setClaimedNotice(`Claim confirmed for ${venue.name} on behalf of ${currentProfile.scope}. Double-booking exclusion constraint verified.`);
+    showToast(`Claim confirmed for ${venue.name} on behalf of ${currentProfile.scope}. Double-booking constraint verified.`);
     setClaimWindow((prev) => ({
       ...prev,
       slotsAvailable: Math.max(0, prev.slotsAvailable - 1),
     }));
+    setAuditLog((prev) => [
+      {
+        id: `log-${Date.now()}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        actor: currentProfile.name,
+        role: actingTitle,
+        action: 'Claimed Venue on Live Map',
+        target: venue.name,
+      },
+      ...prev,
+    ]);
+  };
+
+  const handlePublishAnnouncement = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!announceBody.trim()) return;
+
+    if (announceScope === 'global' && currentProfile.kind !== 'executive') {
+      showToast('Submitted for Chief Secretary Approval. SLA: 12 hours.');
+    } else {
+      showToast(`Announcement dispatched to ${announceScope.toUpperCase()} scope.`);
+    }
+
+    setAuditLog((prev) => [
+      {
+        id: `log-${Date.now()}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        actor: currentProfile.name,
+        role: actingTitle,
+        action: announceScope === 'global' ? 'Submitted Global Post (Pending)' : 'Published Scoped Notice',
+        target: announceTitle || 'Official Announcement',
+      },
+      ...prev,
+    ]);
+
+    setAnnounceTitle('');
+    setAnnounceBody('');
+    setActiveModal(null);
+  };
+
+  const handleDispatchEmergency = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emergencyReason.trim() || !emergencyConfirmed) return;
+
+    showToast(`EMERGENCY BROADCAST DISPATCHED: Push notification sent to all devices.`);
+    setAuditLog((prev) => [
+      {
+        id: `log-${Date.now()}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        actor: currentProfile.name,
+        role: actingTitle,
+        action: `DISPATCHED EMERGENCY (${emergencySeverity.toUpperCase()})`,
+        target: emergencyReason,
+      },
+      ...prev,
+    ]);
+
+    setEmergencyReason('');
+    setEmergencyConfirmed(false);
+    setActiveModal(null);
+  };
+
+  const handleDecideClaim = (claimId: string, decision: 'approved' | 'rejected') => {
+    setClaimsQueue((prev) =>
+      prev.map((c) => (c.id === claimId ? { ...c, status: decision } : c))
+    );
+    showToast(`Claim #${claimId} marked as ${decision.toUpperCase()}.`);
   };
 
   return (
     <>
       <TopBar title="Console" />
-      <div className="page__content">
-        {/* Acting As Header (Spec 09 Section 10) */}
-        <section className="console-acting-as">
-          <div className="console-acting-as__card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span className="text-faint" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase' }}>
-                Leader Authority
-              </span>
-              <span className="badge badge--synced">Verified Cabinet</span>
-            </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8 }}>
-              <div className="avatar avatar--md">{currentProfile.avatar}</div>
-              <div style={{ flex: 1 }}>
-                <strong style={{ fontSize: 14 }}>{actingTitle}</strong>
-                <p className="text-faint" style={{ fontSize: 12 }}>
-                  Scope: {currentProfile.scope}
-                </p>
-              </div>
-            </div>
-
-            <div className="console-scope-chips">
-              <span className="chip chip--sm chip--active">Acting as: {currentProfile.kind.toUpperCase()}</span>
-              {currentProfile.kind === 'minister' && (
-                <button
-                  className="chip chip--sm"
-                  onClick={() =>
-                    setActingTitle(
-                      actingTitle === currentProfile.title
-                        ? 'Welfare & Emergency Allocations Officer'
-                        : currentProfile.title
-                    )
-                  }
-                >
-                  Switch Delegation ↻
-                </button>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* Claim Notice Toast */}
-        {claimedNotice && (
-          <div className="console-alert-toast">
-            {claimedNotice}
+      <div className="console-canvas">
+        {/* Toast Alert */}
+        {toastMessage && (
+          <div className="console-toast" role="alert">
+            <CheckCircleIcon size={14} color="var(--yuni-teal)" strokeWidth={2.5} />
+            <span>{toastMessage}</span>
           </div>
         )}
 
-        {/* Venue Rush Flagship Tile (Spec 09 Section 11) */}
-        <section className="console-section">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <h3>Venue Allocation Rush</h3>
-              <Graffiti type="star-burst" color="var(--yuni-sun)" width={16} height={16} />
+        {/* 1. AUTHORITY & ACTING-AS BANNER (Spec 10 Section 2) */}
+        <section className="console-header-card">
+          <div className="console-header-top">
+            <div>
+              <span className="console-header-tag">ORGANOGRAM AUTHORITY</span>
+              <h2 className="console-header-title">{actingTitle}</h2>
+              <p className="console-header-scope">
+                Scope: <code>{currentProfile.scope}</code> · Term valid 2025/2026
+              </p>
             </div>
-            <span className="badge badge--pending">Live Window</span>
+            <div className="console-verified-badge">
+              <ShieldCheckIcon size={18} color="var(--yuni-teal)" strokeWidth={2.2} />
+              <span>Verified</span>
+            </div>
           </div>
 
-          <div className="card console-venue-rush-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div>
-                <strong>{claimWindow.name}</strong>
-                <p className="text-muted" style={{ fontSize: 13, marginTop: 2 }}>
-                  {claimWindow.venueName} · {claimWindow.fairness}
-                </p>
-              </div>
-              <div className="console-countdown-ring">
-                <span className="num" style={{ fontSize: 13, fontWeight: 800, color: 'var(--yuni-blue)' }}>
-                  00:{claimWindow.opensInSec < 10 ? `0${claimWindow.opensInSec}` : claimWindow.opensInSec}
-                </span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
-              <span className="text-faint" style={{ fontSize: 12 }}>
-                Slots remaining: <strong>{claimWindow.slotsAvailable} / {claimWindow.totalSlots}</strong>
-              </span>
-              <span className="badge badge--blue" style={{ fontSize: 11 }}>{claimWindow.eligible}</span>
-            </div>
-
-            <button
-              className="btn btn--primary btn--lg"
-              style={{ width: '100%', marginTop: 14 }}
-              onClick={() => {
-                setSelectedVenueForClaim('lt-3');
-                setIsMapOpen(true);
-              }}
-            >
-              Open Live Claim Map
-            </button>
+          <div className="console-delegation-strip">
+            <span className="console-acting-label">Acting as:</span>
+            <span className="badge badge--blue" style={{ fontSize: 10.5 }}>
+              {currentProfile.kind.toUpperCase()}
+            </span>
+            {currentProfile.kind === 'minister' && (
+              <button
+                className="chip chip--sm"
+                onClick={() =>
+                  setActingTitle(
+                    actingTitle === currentProfile.title
+                      ? 'Welfare & Emergency Allocations Officer'
+                      : currentProfile.title
+                  )
+                }
+                type="button"
+                style={{ fontSize: 11 }}
+              >
+                Switch Delegation ↻
+              </button>
+            )}
           </div>
         </section>
 
-        {/* Console Launchpad Tiles (Spec 09 Section 10) */}
-        <section className="console-section">
-          <h3>Leader Tools</h3>
-          <div className="console-tiles-grid">
-            <div className="console-tile">
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <MegaphoneIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
-              </div>
-              <strong>Announce</strong>
-              <p className="text-faint">Post scoped notice or push</p>
+        {/* 2. LIVE VENUE RUSH ALLOCATION DESK (Spec 10 Section 8.3) */}
+        <section className="console-rush-card">
+          <div className="console-rush-top">
+            <div>
+              <span className="badge badge--pending" style={{ fontSize: 10 }}>Live Window</span>
+              <h3 className="console-rush-title">{claimWindow.name}</h3>
+              <p className="console-rush-sub">
+                {claimWindow.venueName} · {claimWindow.fairness}
+              </p>
             </div>
+            <div className="console-rush-timer">
+              <ClockIcon size={13} color="#DC2626" strokeWidth={2.2} />
+              <span className="num" style={{ fontWeight: 800, color: '#DC2626' }}>
+                00:{claimWindow.opensInSec < 10 ? `0${claimWindow.opensInSec}` : claimWindow.opensInSec}
+              </span>
+            </div>
+          </div>
 
+          <div className="console-rush-stats">
+            <span className="text-faint" style={{ fontSize: 12 }}>
+              Slots remaining: <strong>{claimWindow.slotsAvailable} / {claimWindow.totalSlots}</strong>
+            </span>
+            <span className="badge badge--blue" style={{ fontSize: 11 }}>
+              {claimWindow.eligible}
+            </span>
+          </div>
+
+          <button
+            className="btn btn--primary btn--lg"
+            style={{ width: '100%', marginTop: 14 }}
+            onClick={() => {
+              setSelectedVenueForClaim('lt-3');
+              setIsMapOpen(true);
+            }}
+            type="button"
+          >
+            Open Live Claim Map
+          </button>
+        </section>
+
+        {/* 3. MINISTERIAL & LEADER TOOLS GRID */}
+        <section className="console-tools-section">
+          <div className="console-section-subhead">
+            <span className="console-subhead-text">LEADERSHIP MODULES · SPEC 10 RBAC</span>
+          </div>
+
+          <div className="console-tools-grid">
+            {/* Announce Desk */}
             <div
-              className="console-tile"
-              onClick={() => {
-                setSelectedVenueForClaim('lt-1');
-                setIsMapOpen(true);
-              }}
+              className="console-tool-card"
+              onClick={() => setActiveModal('announce')}
+              role="button"
+              tabIndex={0}
             >
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <LandmarkIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+              <div className="console-tool-icon">
+                <MegaphoneIcon size={20} color="var(--yuni-blue)" strokeWidth={2.2} />
               </div>
-              <strong>Venues</strong>
-              <p className="text-faint">Capacity, bookings, maps</p>
+              <strong className="console-tool-name">Announce Desk</strong>
+              <p className="console-tool-desc">Scoped post or global dispatch</p>
             </div>
 
-            <div className="console-tile">
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ClockIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+            {/* Emergency Broadcast */}
+            <div
+              className="console-tool-card console-tool-card--emergency"
+              onClick={() => setActiveModal('emergency')}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="console-tool-icon" style={{ background: 'rgba(239, 68, 68, 0.1)' }}>
+                <AlertCircleIcon size={20} color="#DC2626" strokeWidth={2.2} />
               </div>
-              <strong>Claim Windows</strong>
-              <p className="text-faint">Open FCFS or lottery draw</p>
+              <strong className="console-tool-name">Emergency Desk</strong>
+              <p className="console-tool-desc">Urgent broadcast with instant push</p>
             </div>
 
-            <div className="console-tile">
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <BarChartIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+            {/* Window Manager (Welfare & Sports) */}
+            <div
+              className="console-tool-card"
+              onClick={() => setActiveModal('window-manager')}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="console-tool-icon">
+                <ClockIcon size={20} color="var(--yuni-teal)" strokeWidth={2.2} />
               </div>
-              <strong>Polls & Voting</strong>
-              <p className="text-faint">Launch scoped student poll</p>
+              <strong className="console-tool-name">Claim Windows</strong>
+              <p className="console-tool-desc">Open FCFS or lottery booking</p>
             </div>
 
-            <div className="console-tile">
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <UsersIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+            {/* Academic Clashes Desk (Education) */}
+            <div
+              className="console-tool-card"
+              onClick={() => setActiveModal('academic-desk')}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="console-tool-icon">
+                <BookOpenIcon size={20} color="var(--ink)" strokeWidth={2.2} />
               </div>
-              <strong>Cohort Groups</strong>
-              <p className="text-faint">Manage CR cohort channels</p>
+              <strong className="console-tool-name">Academic Clashes</strong>
+              <p className="console-tool-desc">Timetable overlap dispute desk</p>
             </div>
 
-            <div className="console-tile">
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ShieldCheckIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+            {/* Safe Reports Desk (Gender & Internal) */}
+            <div
+              className="console-tool-card"
+              onClick={() => setActiveModal('safe-reports')}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="console-tool-icon">
+                <ShieldCheckIcon size={20} color="var(--yuni-sun)" strokeWidth={2.2} />
               </div>
-              <strong>Audit Log</strong>
-              <p className="text-faint">Tamper-proof capability log</p>
+              <strong className="console-tool-name">Safe Reports (R)</strong>
+              <p className="console-tool-desc">Confidential student welfare inbox</p>
             </div>
+
+            {/* Audit Log */}
+            <div
+              className="console-tool-card"
+              onClick={() => setActiveModal('audit')}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="console-tool-icon">
+                <BarChartIcon size={20} color="var(--text-muted)" strokeWidth={2.2} />
+              </div>
+              <strong className="console-tool-name">Audit Log</strong>
+              <p className="console-tool-desc">Immutable capability event stream</p>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. ACTIVE CLAIMS REVIEW DESK (Welfare Ministry) */}
+        <section className="console-claims-section">
+          <div className="console-section-subhead">
+            <span className="console-subhead-text">INCOMING CLAIMS QUEUE</span>
+            <span className="badge badge--blue" style={{ fontSize: 10 }}>Welfare Authority</span>
+          </div>
+
+          <div className="console-claims-list">
+            {claimsQueue.map((claim) => (
+              <div key={claim.id} className="console-claim-item">
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <strong style={{ fontSize: 13.5 }}>{claim.cohort}</strong>
+                    <span className="text-faint" style={{ fontSize: 11 }}>by {claim.crName}</span>
+                  </div>
+                  <p className="text-muted" style={{ fontSize: 12, margin: '2px 0 0' }}>
+                    Venue: <strong>{claim.venue}</strong> · {claim.slot}
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  {claim.status === 'pending' ? (
+                    <>
+                      <button
+                        className="btn btn--primary btn--sm"
+                        onClick={() => handleDecideClaim(claim.id, 'approved')}
+                        type="button"
+                        style={{ fontSize: 11 }}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        className="btn btn--ghost btn--sm"
+                        onClick={() => handleDecideClaim(claim.id, 'rejected')}
+                        type="button"
+                        style={{ fontSize: 11 }}
+                      >
+                        Reject
+                      </button>
+                    </>
+                  ) : (
+                    <span
+                      className={`badge ${claim.status === 'approved' ? 'badge--synced' : 'badge--pending'}`}
+                      style={{ fontSize: 10.5, textTransform: 'capitalize' }}
+                    >
+                      {claim.status}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       </div>
 
-      {/* MapSheet for venue claiming */}
+      {/* MODAL 1: ANNOUNCE DESK */}
+      {activeModal === 'announce' && (
+        <div className="console-modal-overlay" role="dialog" aria-modal="true">
+          <div className="console-modal">
+            <div className="console-modal-header">
+              <h3 style={{ margin: 0, font: '800 18px var(--font-display)' }}>Compose Official Notice</h3>
+              <button className="btn btn--ghost btn--sm" onClick={() => setActiveModal(null)}>✕</button>
+            </div>
+
+            <form onSubmit={handlePublishAnnouncement} className="console-modal-body">
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>
+                Target Audience Scope:
+              </label>
+              <div className="console-modal-chips">
+                {(['cohort', 'ministry', 'global'] as const).map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className={`chip chip--sm ${announceScope === s ? 'chip--active' : ''}`}
+                    onClick={() => setAnnounceScope(s)}
+                    style={{ textTransform: 'capitalize' }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+
+              {announceScope === 'global' && currentProfile.kind !== 'executive' && (
+                <div className="console-notice-banner">
+                  <AlertCircleIcon size={14} strokeWidth={2} />
+                  <span>
+                    Global posts require Chief Secretary approval before broadcast (Spec 10 Section 8.2).
+                  </span>
+                </div>
+              )}
+
+              <input
+                className="input"
+                type="text"
+                placeholder="Announcement Title..."
+                value={announceTitle}
+                onChange={(e) => setAnnounceTitle(e.target.value)}
+                style={{ width: '100%', marginTop: 10 }}
+                required
+              />
+
+              <textarea
+                className="input"
+                rows={4}
+                placeholder="Official message body..."
+                value={announceBody}
+                onChange={(e) => setAnnounceBody(e.target.value)}
+                style={{ width: '100%', marginTop: 8 }}
+                required
+              />
+
+              <button className="btn btn--primary" style={{ width: '100%', marginTop: 14 }} type="submit">
+                {announceScope === 'global' ? 'Submit for Chief Secretary Approval' : 'Broadcast to Scope'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: EMERGENCY BROADCAST DESK */}
+      {activeModal === 'emergency' && (
+        <div className="console-modal-overlay" role="dialog" aria-modal="true">
+          <div className="console-modal" style={{ borderTop: '4px solid #DC2626' }}>
+            <div className="console-modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <AlertCircleIcon size={18} color="#DC2626" strokeWidth={2.5} />
+                <h3 style={{ margin: 0, font: '800 18px var(--font-display)', color: '#DC2626' }}>
+                  Emergency Broadcast Desk
+                </h3>
+              </div>
+              <button className="btn btn--ghost btn--sm" onClick={() => setActiveModal(null)}>✕</button>
+            </div>
+
+            <form onSubmit={handleDispatchEmergency} className="console-modal-body">
+              <p style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>
+                Strongest broadcast gate in Yuni. Dispatches instant push banner to every registered student device. Max 1 per leader per day.
+              </p>
+
+              <div style={{ marginTop: 10 }}>
+                <label style={{ fontSize: 12, fontWeight: 700 }}>Severity Level:</label>
+                <div className="console-modal-chips" style={{ marginTop: 4 }}>
+                  <button
+                    type="button"
+                    className={`chip chip--sm ${emergencySeverity === 'high_alert' ? 'chip--active' : ''}`}
+                    onClick={() => setEmergencySeverity('high_alert')}
+                  >
+                    High Alert (Red)
+                  </button>
+                  <button
+                    type="button"
+                    className={`chip chip--sm ${emergencySeverity === 'drill' ? 'chip--active' : ''}`}
+                    onClick={() => setEmergencySeverity('drill')}
+                  >
+                    Campus Safety Drill (Amber)
+                  </button>
+                </div>
+              </div>
+
+              <textarea
+                className="input"
+                rows={3}
+                placeholder="Emergency reason and immediate instructions..."
+                value={emergencyReason}
+                onChange={(e) => setEmergencyReason(e.target.value)}
+                style={{ width: '100%', marginTop: 10 }}
+                required
+              />
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, fontSize: 12, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={emergencyConfirmed}
+                  onChange={(e) => setEmergencyConfirmed(e.target.checked)}
+                />
+                <span>I confirm this broadcast is verified with campus security authority.</span>
+              </label>
+
+              <button
+                className="btn btn--primary"
+                style={{ width: '100%', marginTop: 14, background: '#DC2626', borderColor: '#DC2626' }}
+                disabled={!emergencyConfirmed || !emergencyReason.trim()}
+                type="submit"
+              >
+                Dispatch Instant Emergency Alert
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: AUDIT LOG VIEWER */}
+      {activeModal === 'audit' && (
+        <div className="console-modal-overlay" role="dialog" aria-modal="true">
+          <div className="console-modal">
+            <div className="console-modal-header">
+              <h3 style={{ margin: 0, font: '800 18px var(--font-display)' }}>System Audit Ledger</h3>
+              <button className="btn btn--ghost btn--sm" onClick={() => setActiveModal(null)}>✕</button>
+            </div>
+
+            <div className="console-modal-body">
+              <p className="text-faint" style={{ fontSize: 12 }}>
+                Tamper-proof capability log (Spec 10 Section 1.5 & Section 9):
+              </p>
+
+              <div className="console-audit-list">
+                {auditLog.map((log) => (
+                  <div key={log.id} className="console-audit-entry">
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <strong style={{ fontSize: 12.5 }}>{log.actor}</strong>
+                      <span className="text-faint" style={{ fontSize: 11 }}>{log.timestamp}</span>
+                    </div>
+                    <span className="badge badge--surface" style={{ fontSize: 10, marginTop: 2, display: 'inline-block' }}>
+                      {log.role}
+                    </span>
+                    <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text)' }}>
+                      <strong>{log.action}</strong>: {log.target}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: SAFE REPORTS DESK */}
+      {activeModal === 'safe-reports' && (
+        <div className="console-modal-overlay" role="dialog" aria-modal="true">
+          <div className="console-modal">
+            <div className="console-modal-header">
+              <h3 style={{ margin: 0, font: '800 18px var(--font-display)' }}>Safe Reports Desk (Restricted)</h3>
+              <button className="btn btn--ghost btn--sm" onClick={() => setActiveModal(null)}>✕</button>
+            </div>
+
+            <div className="console-modal-body">
+              <div className="console-notice-banner" style={{ background: 'rgba(255, 214, 10, 0.15)', borderColor: 'var(--yuni-sun)' }}>
+                <ShieldCheckIcon size={14} strokeWidth={2} />
+                <span>
+                  Confidential inbox. Every open is logged in the permanent audit ledger. Identifying details are auto-redacted.
+                </span>
+              </div>
+
+              <div style={{ marginTop: 12 }}>
+                <div className="console-claim-item">
+                  <div>
+                    <span className="badge badge--blue" style={{ fontSize: 10 }}>Anonymous Ticket #SR-102</span>
+                    <p style={{ fontSize: 12.5, margin: '4px 0 0', color: 'var(--text)' }}>
+                      Hostel block safety query regarding evening corridor lighting.
+                    </p>
+                    <span className="text-faint" style={{ fontSize: 11 }}>Received 2h ago · Policy acknowledged</span>
+                  </div>
+                  <button className="btn btn--primary btn--sm" onClick={() => showToast('Acknowledged via confidential thread.')}>
+                    Acknowledge
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 5: ACADEMIC CLASHES DESK (Education Ministry) */}
+      {activeModal === 'academic-desk' && (
+        <div className="console-modal-overlay" role="dialog" aria-modal="true">
+          <div className="console-modal">
+            <div className="console-modal-header">
+              <h3 style={{ margin: 0, font: '800 18px var(--font-display)' }}>Academic Clashes Desk</h3>
+              <button className="btn btn--ghost btn--sm" onClick={() => setActiveModal(null)}>✕</button>
+            </div>
+
+            <div className="console-modal-body">
+              <p className="text-faint" style={{ fontSize: 12 }}>
+                Timetable and lab practical overlap reports submitted by Class Representatives:
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+                {clashes.map((c) => (
+                  <div key={c.id} className="console-claim-item" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                      <strong style={{ fontSize: 13.5 }}>{c.subject}</strong>
+                      <span className="badge badge--pending" style={{ fontSize: 10, textTransform: 'capitalize' }}>
+                        {c.status}
+                      </span>
+                    </div>
+                    <p style={{ margin: '4px 0', fontSize: 12.5, color: 'var(--text)' }}>{c.description}</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginTop: 4 }}>
+                      <span className="text-faint" style={{ fontSize: 11 }}>Reported by {c.submittedBy}</span>
+                      <button
+                        className="btn btn--primary btn--sm"
+                        onClick={() => {
+                          setClashes((prev) =>
+                            prev.map((item) => (item.id === c.id ? { ...item, status: 'resolved' } : item))
+                          );
+                          showToast(`Clash ticket #${c.id} marked as RESOLVED.`);
+                        }}
+                        style={{ fontSize: 11 }}
+                      >
+                        Resolve Dispute
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MapSheet in claim-venue mode */}
       <MapSheet
         isOpen={isMapOpen}
         mode="claim-venue"

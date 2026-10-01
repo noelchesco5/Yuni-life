@@ -1,82 +1,395 @@
-.me-profile {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-6) 0 var(--space-4);
+/* ==========================================================================
+   YUNI ME — DIGITAL CAMPUS PASS & IDENTITY
+   ========================================================================== */
+
+.me-canvas {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 var(--space-4) 80px;
 }
 
-.me-profile__info {
+/* Topbar Dev Role Badge */
+.topbar-dev-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font: 700 11px/1 var(--font-display);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.topbar-dev-badge:hover {
+  border-color: var(--yuni-blue);
+}
+
+.topbar-dev-chip {
+  color: var(--yuni-blue);
+  font-weight: 800;
+}
+
+/* 1. TACTILE MUHAS DIGITAL STUDENT PASS */
+.me-pass-section {
+  padding-top: var(--space-3);
+  perspective: 1000px;
+}
+
+.me-digital-pass {
+  min-height: 200px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.me-pass-inner {
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+}
+
+.me-digital-pass--flipped .me-pass-inner {
+  transform: rotateY(180deg);
+}
+
+.me-pass-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 20px 22px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 10px 30px -8px rgba(11, 19, 43, 0.35);
+}
+
+/* Front Face */
+.me-pass-face--front {
+  background: linear-gradient(135deg, #0B132B 0%, #1C2541 65%, #2347C5 100%);
+  color: #FFFFFF;
+  border: 1.5px solid rgba(255, 214, 10, 0.3);
+}
+
+.me-pass-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.me-pass-univ {
+  font: 800 10px/1.2 var(--font-display);
+  letter-spacing: 0.08em;
+  color: var(--yuni-sun);
+  display: block;
+}
+
+.me-pass-type {
+  font: 800 11px/1.2 var(--font-display);
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.7);
+  display: block;
+  margin-top: 3px;
+}
+
+.me-pass-seal {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 214, 10, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 214, 10, 0.4);
+}
+
+.me-pass-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 14px 0;
+}
+
+.me-pass-avatar-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.me-pass-initials {
+  font: 800 18px var(--font-display);
+  color: #FFFFFF;
+}
+
+.me-pass-details {
   flex: 1;
 }
 
-.me-saris-btn {
+.me-pass-name {
+  font: 800 18px/1.2 var(--font-display);
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.me-pass-regno {
+  font: 700 11px/1.3 var(--font-mono);
+  color: var(--yuni-sun);
+  margin: 4px 0 0 0;
+}
+
+.me-pass-prog {
+  font: 500 11px/1.3 var(--font-body);
+  color: rgba(255, 255, 255, 0.75);
+  margin: 2px 0 0 0;
+}
+
+.me-pass-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 10px;
+}
+
+.me-pass-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font: 700 10.5px/1 var(--font-body);
+  color: #FFFFFF;
+}
+
+.me-pass-flip-hint {
+  font: 600 10px/1 var(--font-body);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Back Face (Barcode) */
+.me-pass-face--back {
+  background: #FFFFFF;
+  color: var(--ink);
+  border: 1.5px solid var(--border);
+  transform: rotateY(180deg);
+}
+
+.me-pass-face--back .me-pass-univ {
+  color: var(--ink);
+}
+
+.me-pass-face--back .me-pass-type {
+  color: var(--text-faint);
+}
+
+.me-pass-barcode-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.me-pass-barcode-bars {
   width: 100%;
-  margin-top: var(--space-2);
+  height: 44px;
+  background: repeating-linear-gradient(
+    90deg,
+    #0B132B 0,
+    #0B132B 2px,
+    transparent 2px,
+    transparent 5px,
+    #0B132B 5px,
+    #0B132B 8px,
+    transparent 8px,
+    transparent 11px,
+    #0B132B 11px,
+    #0B132B 12px,
+    transparent 12px,
+    transparent 16px
+  );
 }
 
-.me-saris-note {
+.me-pass-barcode-num {
+  font: 700 12px/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  margin-top: 6px;
+}
+
+.me-pass-back-notice {
+  font: 500 11px/1.4 var(--font-body);
+  color: var(--text-faint);
   text-align: center;
-  font-size: 12px;
-  margin-top: var(--space-2);
+  margin: 0;
 }
 
-.me-section {
-  margin-top: var(--space-6);
+/* 2. SARIS CARD */
+.me-saris-card {
+  margin-top: var(--space-4);
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
-.me-role-toggle-row {
+.me-saris-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.me-saris-tag {
+  font: 800 10px/1 var(--font-display);
+  letter-spacing: 0.08em;
+  color: var(--yuni-blue);
+  text-transform: uppercase;
+}
+
+.me-saris-title {
+  font: 800 15px/1.2 var(--font-display);
+  color: var(--ink);
+  margin: 4px 0 2px;
+}
+
+.me-saris-sub {
+  font: 500 12px/1.4 var(--font-body);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.me-saris-launch-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 3. COURSES SECTION */
+.me-courses-section {
+  margin-top: var(--space-5);
+}
+
+.me-section-subhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.me-subhead-text {
+  font: 800 11.5px/1 var(--font-display);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.me-course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.me-course-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.me-course-name {
+  font: 700 13.5px/1.2 var(--font-body);
+  color: var(--ink);
+}
+
+.me-course-meta {
+  font: 500 11.5px/1 var(--font-body);
+  color: var(--text-faint);
+  margin: 3px 0 0 0;
+}
+
+/* 4. ROLE SIMULATOR DRAWER */
+.me-role-drawer {
+  margin-top: var(--space-5);
+  background: var(--surface-1);
+  border: 1.5px dashed var(--yuni-blue);
+  border-radius: 16px;
+  padding: 16px 18px;
+}
+
+.me-role-options-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-2);
-  margin-top: var(--space-3);
+  gap: 8px;
 }
 
-.me-role-btn {
+.me-role-pill-btn {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  padding: 10px 12px;
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-card);
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
   cursor: pointer;
   transition: all 0.15s ease;
-  font-size: 13px;
 }
 
-.me-role-btn--active {
-  background: #FFFFFF;
+.me-role-pill-btn:hover {
   border-color: var(--yuni-blue);
-  box-shadow: 0 4px 12px rgba(35, 71, 197, 0.12);
 }
 
-.me-settings {
-  display: grid;
-  gap: 1px;
-  margin-top: var(--space-3);
-  background: var(--border);
+.me-role-pill-btn--active {
+  border-color: var(--yuni-blue);
+  background: rgba(35, 71, 197, 0.04);
+}
+
+/* 5. SETTINGS SECTION */
+.me-settings-section {
+  margin-top: var(--space-5);
+}
+
+.me-settings-card {
+  background: #FFFFFF;
   border: 1px solid var(--border);
-  border-radius: var(--radius-card);
+  border-radius: 16px;
   overflow: hidden;
 }
 
-.me-setting {
+.me-setting-item {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: var(--space-3) var(--space-4);
-  background: var(--surface);
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  gap: 12px;
 }
 
-.me-theme-toggle {
+.me-setting-item:last-child {
+  border-bottom: none;
+}
+
+.me-theme-chips {
   display: flex;
-  gap: var(--space-1);
+  gap: 4px;
 }
 
+/* Footer */
 .me-footer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--space-8) 0 var(--space-4);
+  text-align: center;
+  padding: var(--space-6) 0 var(--space-4);
 }

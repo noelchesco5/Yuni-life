@@ -1,8 +1,14 @@
+import { useState } from 'react';
 import { TopBar } from '../components/layout/TopBar';
 import { useTheme } from '../context/ThemeContext';
 import { useUserRole, type UserRoleKind } from '../context/RoleContext';
 import { useInAppBrowser } from '../context/InAppBrowserContext';
 import { Graffiti } from '../components/ui/Graffiti';
+import {
+  CheckCircleIcon,
+  ExternalLinkIcon,
+  ShieldCheckIcon,
+} from '../components/ui/Icons';
 import './Me.css';
 
 export function MePage() {
@@ -10,96 +16,220 @@ export function MePage() {
   const { currentProfile, setRoleKind } = useUserRole();
   const { openInAppBrowser } = useInAppBrowser();
 
+  const [isCardFlipped, setIsCardFlipped] = useState(false);
+  const [showRoleDrawer, setShowRoleDrawer] = useState(false);
+
   return (
     <>
-      <TopBar title="Me" />
-      <div className="page__content">
-        {/* Profile Card with Spec 09 Badge */}
-        <div className="me-profile">
-          <div className="avatar avatar--lg">{currentProfile.avatar}</div>
-          <div className="me-profile__info">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <h2>{currentProfile.name}</h2>
-              <Graffiti type="sparkle" color="var(--yuni-sun)" width={16} height={16} />
-            </div>
-            <p className="text-muted" style={{ fontSize: 14 }}>{currentProfile.scope}</p>
+      <TopBar
+        title="Me"
+        actions={
+          <button
+            className="topbar-dev-badge"
+            onClick={() => setShowRoleDrawer(!showRoleDrawer)}
+            title="Toggle Role Delegation Simulator"
+            type="button"
+          >
+            <span>{currentProfile.isLeader ? currentProfile.title.split(',')[0] : 'Student'}</span>
+            <span className="topbar-dev-chip">Role ▾</span>
+          </button>
+        }
+      />
 
-            <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-              <span className="badge badge--blue" style={{ textTransform: 'uppercase', fontSize: 10 }}>
-                {currentProfile.isLeader ? 'Leader' : 'Student'}
-              </span>
-              <span className="badge badge--synced" style={{ fontSize: 10 }}>Verified</span>
+      <div className="me-canvas">
+        {/* 1. TACTILE MUHAS DIGITAL STUDENT PASS */}
+        <section className="me-pass-section" aria-label="Digital Student Pass">
+          <div
+            className={`me-digital-pass ${isCardFlipped ? 'me-digital-pass--flipped' : ''}`}
+            onClick={() => setIsCardFlipped(!isCardFlipped)}
+            role="button"
+            tabIndex={0}
+            aria-label="Tap to flip student pass"
+          >
+            <div className="me-pass-inner">
+              {/* Front of Pass */}
+              <div className="me-pass-face me-pass-face--front">
+                <div className="me-pass-header">
+                  <div>
+                    <span className="me-pass-univ">MUHIMBILI UNIVERSITY</span>
+                    <span className="me-pass-type">STUDENT IDENTITY PASS</span>
+                  </div>
+                  <div className="me-pass-seal">
+                    <ShieldCheckIcon size={20} color="var(--yuni-sun)" strokeWidth={2.2} />
+                  </div>
+                </div>
+
+                <div className="me-pass-body">
+                  <div className="me-pass-avatar-box">
+                    <span className="me-pass-initials">{currentProfile.avatar}</span>
+                  </div>
+                  <div className="me-pass-details">
+                    <h2 className="me-pass-name">{currentProfile.name}</h2>
+                    <p className="me-pass-regno">REG NO: 2024-04-01928</p>
+                    <p className="me-pass-prog">MD · Doctor of Medicine · Year 2</p>
+                  </div>
+                </div>
+
+                <div className="me-pass-footer">
+                  <div className="me-pass-status">
+                    <CheckCircleIcon size={12} color="var(--yuni-teal)" strokeWidth={2.5} />
+                    <span>Dexie Offline Synced</span>
+                  </div>
+                  <span className="me-pass-flip-hint">Tap to view barcode ↻</span>
+                </div>
+              </div>
+
+              {/* Back of Pass (Library & Exam Barcode) */}
+              <div className="me-pass-face me-pass-face--back">
+                <div className="me-pass-header">
+                  <span className="me-pass-univ">CAMPUS ACCESS BARCODE</span>
+                  <span className="me-pass-type">VALID 2025/2026</span>
+                </div>
+
+                {/* Simulated Laser Barcode */}
+                <div className="me-pass-barcode-container">
+                  <div className="me-pass-barcode-bars" aria-hidden="true" />
+                  <span className="me-pass-barcode-num">20240401928001</span>
+                </div>
+
+                <p className="me-pass-back-notice">
+                  Official digital identification for MUHAS library entry, clinical laboratory access, and examination hall roll call.
+                </p>
+
+                <div className="me-pass-footer">
+                  <span className="me-pass-flip-hint">Tap to view pass front ↻</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* SARIS Button (Spec 09 Section 3: Opens in In-App Browser) */}
-        <button
-          className="btn btn--primary btn--lg me-saris-btn"
-          onClick={() => openInAppBrowser('https://saris2.muhas.ac.tz/', 'SARIS Student Portal · MUHAS')}
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-            <polyline points="15 3 21 3 21 9" />
-            <line x1="10" y1="14" x2="21" y2="3" />
-          </svg>
-          Open SARIS
-        </button>
-        <p className="text-faint me-saris-note">
-          Opens in the secure in-app browser. Yuni never sees your SARIS credentials.
-        </p>
-
-        {/* Role & Tab Switcher (Spec 09 Section 3 & 8) */}
-        <section className="me-section">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h3>Cabinet & Role Preview</h3>
-            <span className="badge badge--blue">Spec 09 RBAC</span>
+        {/* 2. SARIS 2.0 DIRECT PORTAL TILE */}
+        <section className="me-saris-card">
+          <div className="me-saris-header">
+            <div>
+              <span className="me-saris-tag">OFFICIAL PORTAL</span>
+              <h3 className="me-saris-title">MUHAS SARIS 2.0</h3>
+              <p className="me-saris-sub">
+                Course registration, continuous assessment (CA) & semester examination results.
+              </p>
+            </div>
+            <button
+              className="btn btn--primary btn--sm me-saris-launch-btn"
+              onClick={() => openInAppBrowser('https://saris2.muhas.ac.tz/', 'SARIS Portal · MUHAS')}
+              type="button"
+            >
+              <span>Launch</span>
+              <ExternalLinkIcon size={14} strokeWidth={2.2} />
+            </button>
           </div>
-          <p className="text-faint" style={{ fontSize: 12, marginTop: 2 }}>
-            Switch roles to test the 3-tab (Student) vs 4-tab (Leader Console) layout:
-          </p>
+        </section>
 
-          <div className="me-role-toggle-row">
-            {(
-              [
-                { kind: 'student', label: 'Student (3 tabs)', desc: 'Chat · Home · Me' },
-                { kind: 'cr', label: 'CR (4 tabs)', desc: 'Chat · Home · Console · Me' },
-                { kind: 'minister', label: 'Minister (4 tabs)', desc: 'Welfare Cabinet Authority' },
-              ] as const
-            ).map((r) => (
-              <button
-                key={r.kind}
-                className={`me-role-btn ${currentProfile.kind === r.kind ? 'me-role-btn--active' : ''}`}
-                onClick={() => setRoleKind(r.kind as UserRoleKind)}
-                type="button"
-              >
-                <strong>{r.label}</strong>
-                <span className="text-faint" style={{ fontSize: 11 }}>{r.desc}</span>
-              </button>
+        {/* 3. ENROLLED CLINICAL COURSES */}
+        <section className="me-courses-section">
+          <div className="me-section-subhead">
+            <span className="me-subhead-text">ENROLLED COURSES · SEMESTER II</span>
+            <span className="badge badge--blue" style={{ fontSize: 10 }}>15 Credits</span>
+          </div>
+
+          <div className="me-course-list">
+            {[
+              { code: 'AN 201', name: 'Gross Anatomy & Embryology', credits: '5 Cr', lab: 'Histology Lab B' },
+              { code: 'PH 202', name: 'Systemic Human Physiology', credits: '4 Cr', lab: 'Clinical Wing LT 3' },
+              { code: 'BC 203', name: 'Medical Biochemistry & Genetics', credits: '4 Cr', lab: 'Main Science Lab' },
+              { code: 'BE 204', name: 'Behavioral Sciences & Medical Ethics', credits: '2 Cr', lab: 'Lecture Theatre 1' },
+            ].map((c) => (
+              <div key={c.code} className="me-course-row">
+                <div>
+                  <strong className="me-course-name">{c.name}</strong>
+                  <p className="me-course-meta">
+                    {c.code} · {c.lab}
+                  </p>
+                </div>
+                <span className="badge badge--surface" style={{ fontSize: 11 }}>
+                  {c.credits}
+                </span>
+              </div>
             ))}
           </div>
         </section>
 
-        {/* Settings */}
-        <section className="me-section">
-          <h3>Settings</h3>
-          <div className="me-settings">
-            {/* Theme */}
-            <div className="me-setting">
+        {/* 4. DISCREET ROLE SWITCHER DRAWER (Dev / Test) */}
+        {showRoleDrawer && (
+          <section className="me-role-drawer">
+            <div className="me-section-subhead">
+              <span className="me-subhead-text">CABINET ROLE DELEGATION SIMULATOR</span>
+              <button
+                className="btn btn--ghost btn--sm"
+                onClick={() => setShowRoleDrawer(false)}
+                style={{ fontSize: 11 }}
+              >
+                Close ✕
+              </button>
+            </div>
+            <p className="text-faint" style={{ fontSize: 12, marginBottom: 10 }}>
+              Test the Spec 10 RBAC permissions and 3-tab vs 4-tab (Console) experience:
+            </p>
+
+            <div className="me-role-options-grid">
+              {(
+                [
+                  {
+                    kind: 'student',
+                    title: 'Student (Verified)',
+                    desc: 'Standard 3 tabs: Chat · Home · Me. View-only access.',
+                  },
+                  {
+                    kind: 'cr',
+                    title: 'Class Representative (CR)',
+                    desc: '4 tabs: Chat · Home · Console · Me. Cohort desk, claim requests.',
+                  },
+                  {
+                    kind: 'minister',
+                    title: 'Minister of Welfare',
+                    desc: 'Cabinet Authority: Venue Rush window manager, emergency broadcast.',
+                  },
+                ] as const
+              ).map((r) => (
+                <button
+                  key={r.kind}
+                  className={`me-role-pill-btn ${currentProfile.kind === r.kind ? 'me-role-pill-btn--active' : ''}`}
+                  onClick={() => setRoleKind(r.kind as UserRoleKind)}
+                  type="button"
+                >
+                  <strong style={{ fontSize: 13 }}>{r.title}</strong>
+                  <span className="text-faint" style={{ fontSize: 11 }}>
+                    {r.desc}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 5. APP SETTINGS & OFFLINE HEALTH */}
+        <section className="me-settings-section">
+          <div className="me-section-subhead">
+            <span className="me-subhead-text">SYSTEM & STORAGE</span>
+          </div>
+
+          <div className="me-settings-card">
+            {/* Theme Toggle */}
+            <div className="me-setting-item">
               <div>
-                <p style={{ fontWeight: 600 }}>Theme</p>
-                <p className="text-faint" style={{ fontSize: 13 }}>
-                  {theme === 'system' ? 'Follow system' : theme === 'dark' ? 'Dark' : 'Light (Recommended)'}
+                <strong style={{ fontSize: 13.5 }}>Interface Theme</strong>
+                <p className="text-faint" style={{ fontSize: 12 }}>
+                  {theme === 'system' ? 'Follow system appearance' : theme === 'dark' ? 'Dark Mode' : 'Light (Recommended)'}
                 </p>
               </div>
-              <div className="me-theme-toggle">
+              <div className="me-theme-chips">
                 {(['light', 'system', 'dark'] as const).map((t) => (
                   <button
                     key={t}
-                    className={`chip ${theme === t ? 'chip--active' : ''}`}
+                    className={`chip chip--sm ${theme === t ? 'chip--active' : ''}`}
                     onClick={() => setTheme(t)}
-                    aria-pressed={theme === t}
-                    style={{ minHeight: 32, fontSize: 12, textTransform: 'capitalize' }}
+                    type="button"
+                    style={{ textTransform: 'capitalize' }}
                   >
                     {t}
                   </button>
@@ -107,54 +237,31 @@ export function MePage() {
               </div>
             </div>
 
-            {/* Language */}
-            <div className="me-setting">
+            {/* Offline IndexedDB Status */}
+            <div className="me-setting-item">
               <div>
-                <p style={{ fontWeight: 600 }}>Language</p>
-                <p className="text-faint" style={{ fontSize: 13 }}>English / Swahili (Bilingual)</p>
-              </div>
-              <span className="chip" style={{ minHeight: 30, fontSize: 12 }}>
-                EN / SW
-              </span>
-            </div>
-
-            {/* Notifications */}
-            <div className="me-setting">
-              <div>
-                <p style={{ fontWeight: 600 }}>Venue Rush Alerts</p>
-                <p className="text-faint" style={{ fontSize: 13 }}>Push for claim windows</p>
-              </div>
-              <span className="badge badge--synced">On</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Sync Status */}
-        <section className="me-section">
-          <h3>Offline Storage</h3>
-          <div className="me-settings">
-            <div className="me-setting">
-              <div>
-                <p style={{ fontWeight: 600 }}>Dexie IndexedDB</p>
-                <p className="text-faint" style={{ fontSize: 13 }}>Timetable & Studly cache active</p>
+                <strong style={{ fontSize: 13.5 }}>Dexie IndexedDB Engine</strong>
+                <p className="text-faint" style={{ fontSize: 12 }}>
+                  Offline cache active for timetable, campus venues & flashcard mastery
+                </p>
               </div>
               <span className="badge badge--synced">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                Synced
+                <CheckCircleIcon size={11} strokeWidth={2.5} />
+                <span>Active</span>
               </span>
             </div>
           </div>
         </section>
 
         {/* Footer */}
-        <div className="me-footer">
-          <p className="text-faint" style={{ fontSize: 12 }}>yuni v0.1.0 · Spec 09 Architecture</p>
+        <footer className="me-footer">
+          <p className="text-faint" style={{ fontSize: 12 }}>
+            Yuni Life v0.1.0 · Muhimbili University of Health & Allied Sciences
+          </p>
           <div style={{ marginTop: 6 }}>
             <Graffiti type="tag-yuni" color="var(--yuni-blue)" />
           </div>
-        </div>
+        </footer>
       </div>
     </>
   );

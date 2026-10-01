@@ -7,14 +7,16 @@
  */
 
 export const NEMOTRON_CONFIG = {
-  // Primary model — 1M context, blazing fast, 0 cost
-  primaryModel: (import.meta.env.VITE_OPENROUTER_PRIMARY_MODEL as string) || 'nvidia/nemotron-3.5-lightning:free',
+  // Primary model — 1M context, blazing fast, 0 cost, active reasoning
+  primaryModel: (import.meta.env.VITE_OPENROUTER_PRIMARY_MODEL as string) || 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
 
   // Fallback models within the generous Nemotron family (OpenRouter allows max 3 models total)
-  fallbackModels: [
-    'nvidia/nemotron-3-super-120b-a12b:free',
-    'nvidia/nemotron-3-ultra-550b-a55b:free',
-  ],
+  fallbackModels: (import.meta.env.VITE_OPENROUTER_FALLBACK_MODELS as string)
+    ? (import.meta.env.VITE_OPENROUTER_FALLBACK_MODELS as string).split(',').map((m) => m.trim())
+    : [
+        'nvidia/nemotron-3-super-120b-a12b:free',
+        'nvidia/nemotron-3-ultra-550b-a55b:free',
+      ],
 
   // OpenRouter endpoints
   apiEndpoint: 'https://openrouter.ai/api/v1/chat/completions',
