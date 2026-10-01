@@ -24,6 +24,33 @@
   margin-top: var(--space-6);
 }
 
+.me-role-toggle-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.me-role-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 13px;
+}
+
+.me-role-btn--active {
+  background: #FFFFFF;
+  border-color: var(--yuni-blue);
+  box-shadow: 0 4px 12px rgba(35, 71, 197, 0.12);
+}
+
 .me-settings {
   display: grid;
   gap: 1px;

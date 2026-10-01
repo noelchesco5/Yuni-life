@@ -1,0 +1,233 @@
+.studly-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 240;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.studly-modal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  max-width: 650px;
+  margin: 0 auto;
+  width: 100%;
+  animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.studly-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--space-3) + var(--safe-top)) var(--space-4) var(--space-3);
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border);
+}
+
+.studly-brand {
+  font: 900 20px var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--yuni-blue);
+}
+
+.studly-modal__close {
+  font-weight: 700;
+}
+
+.studly-modes-strip {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.studly-modes-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.studly-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.studly-hero-box {
+  padding: var(--space-4) 0;
+}
+
+.studly-quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+/* Flashcard Flip Deck */
+.studly-deck-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.studly-deck-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.studly-card {
+  height: 240px;
+  perspective: 1000px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.studly-card__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+}
+
+.studly-card--flipped .studly-card__inner {
+  transform: rotateY(180deg);
+}
+
+.studly-card__front,
+.studly-card__back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-card);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-card);
+  border: 1.5px solid var(--border);
+}
+
+.studly-card__front {
+  background: #FFFFFF;
+}
+
+.studly-card__back {
+  background: var(--surface-2);
+  transform: rotateY(180deg);
+}
+
+.studly-card__text {
+  font: 700 17px var(--font-display);
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.studly-card__tap-hint {
+  margin-top: auto;
+  font-size: 11px;
+}
+
+.studly-card-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Exam Options */
+.studly-exam-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
+  margin-bottom: 12px;
+}
+
+.studly-exam-options {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.studly-exam-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font: 600 13px var(--font-body);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.studly-exam-option--selected {
+  border-color: var(--yuni-blue);
+  background: var(--surface-3);
+  color: var(--yuni-blue);
+}
+
+.studly-exam-option--correct {
+  border-color: var(--yuni-teal);
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--yuni-teal-deep);
+}
+
+.studly-exam-option--wrong {
+  border-color: var(--yuni-alert);
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--yuni-alert);
+}
+
+.studly-exam-explanation {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.studly-inline-search {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-faint);
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+.studly-inline-search:hover {
+  background: var(--yuni-sun);
+  color: var(--ink);
+}
+
+.studly-score-banner {
+  padding: 14px;
+  background: var(--grad-focus);
+  color: #fff;
+  border-radius: var(--radius-card);
+  text-align: center;
+  font-size: 16px;
+  margin-top: 14px;
+}

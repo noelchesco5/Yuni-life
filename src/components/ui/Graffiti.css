@@ -1,0 +1,68 @@
+/* Graffiti personality layer — strictly decorative, pointer-events none */
+.graffiti {
+  display: inline-block;
+  pointer-events: none;
+  user-select: none;
+  vertical-align: middle;
+}
+
+/* Draw-on stroke entrance animation (~400ms) */
+.graffiti-stroke {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: graffitiDraw 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes graffitiDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Pop/Burst animation for stars & sparkles */
+.graffiti-pop {
+  transform-origin: center;
+  animation: graffitiPop 350ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes graffitiPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Hand-lettered tags */
+.graffiti--tag-mambo,
+.graffiti--tag-hop,
+.graffiti--tag-poa,
+.graffiti--tag-sawa,
+.graffiti--tag-yuni {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  transform: rotate(-3deg);
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(255, 214, 10, 0.2);
+  border: 1.5px dashed currentColor;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .graffiti-stroke {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+  .graffiti-pop {
+    transform: scale(1) !important;
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}

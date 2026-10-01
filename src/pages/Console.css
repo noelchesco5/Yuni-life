@@ -1,0 +1,88 @@
+.console-acting-as {
+  padding: var(--space-4) 0 var(--space-2);
+}
+
+.console-acting-as__card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+
+.console-scope-chips {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.console-alert-toast {
+  margin: var(--space-3) 0;
+  padding: 10px 14px;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--yuni-teal-deep);
+  border: 1px solid var(--yuni-teal);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.console-section {
+  margin-top: var(--space-5);
+}
+
+.console-venue-rush-card {
+  margin-top: 8px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+}
+
+.console-countdown-ring {
+  padding: 6px 12px;
+  background: #FFFFFF;
+  border-radius: 999px;
+  border: 1.5px solid var(--yuni-blue);
+  box-shadow: 0 2px 8px rgba(35, 71, 197, 0.12);
+}
+
+.console-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.console-tile {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.console-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+.console-tile:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.console-tile__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 6px;
+}
