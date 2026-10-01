@@ -64,16 +64,7 @@
   font-size: 20px;
 }
 
-.badge--nemotron {
-  background: #10B981;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 6px;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
+
 
 .ai-modal__close {
   width: 32px;

@@ -111,48 +111,36 @@ export function MePage() {
           </div>
         </section>
 
-        {/* AI & Model Routing */}
+        {/* AI Companion Settings */}
         <section className="me-section">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h3>AI Companion</h3>
-            <span className="badge badge--nemotron">NVIDIA Nemotron</span>
-          </div>
+          <h3>Study AI</h3>
           <div className="me-settings">
             <div className="me-setting">
               <div>
-                <p style={{ fontWeight: 600 }}>Active Cloud Model</p>
+                <p style={{ fontWeight: 600 }}>Engine</p>
                 <p className="text-faint" style={{ fontSize: 13 }}>
-                  NVIDIA Nemotron 3.5 Lightning (:free)
+                  Cloud High-Capacity · 1M context
                 </p>
               </div>
-              <span className="badge badge--synced">Active</span>
+              <span className="badge badge--synced">Ready</span>
             </div>
             <div className="me-setting">
               <div>
-                <p style={{ fontWeight: 600 }}>Context Window</p>
+                <p style={{ fontWeight: 600 }}>Daily allowance</p>
                 <p className="text-faint" style={{ fontSize: 13 }}>
-                  1,000,000 tokens · High yield
+                  1,000 requests / day quota
                 </p>
               </div>
-              <span className="badge badge--blue">1M</span>
+              <span className="badge badge--blue">Active</span>
             </div>
             <div className="me-setting">
               <div>
-                <p style={{ fontWeight: 600 }}>Fallback Route</p>
+                <p style={{ fontWeight: 600 }}>Curriculum grounding</p>
                 <p className="text-faint" style={{ fontSize: 13 }}>
-                  Nemotron 3 Super & Ultra
+                  MUHAS medical & health sciences
                 </p>
               </div>
-              <span className="text-muted" style={{ fontSize: 12 }}>Auto failover</span>
-            </div>
-            <div className="me-setting">
-              <div>
-                <p style={{ fontWeight: 600 }}>Daily Free Allowance</p>
-                <p className="text-faint" style={{ fontSize: 13 }}>
-                  1,000 requests / day
-                </p>
-              </div>
-              <span className="badge badge--synced">Generous</span>
+              <span className="text-muted" style={{ fontSize: 12 }}>Enabled</span>
             </div>
           </div>
         </section>

@@ -42,11 +42,8 @@ export function StudyPage() {
               </svg>
             </div>
             <div className="study-mode-card__content">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <strong>AI Tutor</strong>
-                <span className="badge badge--nemotron" style={{ fontSize: 9 }}>Nemotron</span>
-              </div>
-              <span className="text-faint" style={{ fontSize: 13 }}>Ask anything · 1M context</span>
+              <strong>AI Tutor</strong>
+              <span className="text-faint" style={{ fontSize: 13 }}>Ask anything · High-yield revision</span>
             </div>
           </button>
 

@@ -159,16 +159,18 @@ export async function askNemotron(
       return content;
     } catch (err: unknown) {
       lastError = err instanceof Error ? err : new Error(String(err));
-      console.warn(`Nemotron model ${model} failed, trying fallback...`, err);
+      console.warn(`Model ${model} failed, trying fallback...`, err);
       // Loop continues to next model
     }
   }
 
-  throw lastError || new Error('All Nemotron model endpoints failed. Please check network or rate limits.');
+  throw lastError || new Error('All AI service endpoints failed. Please check your network or daily quota.');
 }
 
+export const askStudyTutor = askNemotron;
+
 /**
- * Generate spaced-repetition flashcards using Nemotron
+ * Generate spaced-repetition flashcards using study AI
  */
 export async function generateFlashcardsWithNemotron(
   topicOrNotes: string,
@@ -217,3 +219,5 @@ Format your response as a valid JSON array only, with no markdown code fences an
 
   return cards;
 }
+
+export const generateStudyFlashcards = generateFlashcardsWithNemotron;

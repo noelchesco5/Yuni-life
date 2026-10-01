@@ -13,7 +13,7 @@ export function AiTutorModal({ isOpen, onClose, onFlashcardsCreated }: AiTutorMo
     {
       role: 'assistant',
       content:
-        'Habari! I am your Yuni Study Companion, powered by NVIDIA Nemotron. I have access to a 1,000,000 token context window to help with your MUHAS coursework, anatomy, pharmacology, past papers, or flashcard generation. What are we studying today?',
+        'Habari! I am your Yuni Study Companion. What are we reviewing today? I can break down clinical concepts, summarize lecture topics, or generate spaced-repetition flashcards.',
     },
   ]);
   const [input, setInput] = useState('');
@@ -62,20 +62,20 @@ export function AiTutorModal({ isOpen, onClose, onFlashcardsCreated }: AiTutorMo
             },
           ]);
         } else {
-          throw new Error('Could not parse flashcards from Nemotron.');
+          throw new Error('Could not parse flashcards.');
         }
       } else {
         const response = await askNemotron(newMessages);
         setMessages([...newMessages, { role: 'assistant', content: response }]);
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to reach Nemotron model.';
+      const msg = err instanceof Error ? err.message : 'Unable to reach study assistant.';
       setError(msg);
       setMessages([
         ...newMessages,
         {
           role: 'assistant',
-          content: `⚠️ Error communicating with Nemotron: ${msg}. Please check your connection or quota.`,
+          content: `⚠️ Couldn't complete that request: ${msg}. Please check your connection or try again shortly.`,
         },
       ]);
     } finally {
@@ -92,11 +92,11 @@ export function AiTutorModal({ isOpen, onClose, onFlashcardsCreated }: AiTutorMo
             <div className="ai-modal__avatar">🤖</div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <strong>Yuni AI Tutor</strong>
-                <span className="badge badge--nemotron">NVIDIA Nemotron</span>
+                <strong>Yuni Study Companion</strong>
+                <span className="badge badge--blue" style={{ fontSize: 10 }}>AI</span>
               </div>
               <p className="text-faint" style={{ fontSize: 11 }}>
-                Routed to Nemotron 3.5 Lightning (:free · 1M context)
+                MUHAS revision aid · High-yield context
               </p>
             </div>
           </div>
@@ -149,7 +149,7 @@ export function AiTutorModal({ isOpen, onClose, onFlashcardsCreated }: AiTutorMo
                 <span className="ai-dot"></span>
                 <span className="ai-dot"></span>
                 <span style={{ fontSize: 12, marginLeft: 8, color: 'var(--text-faint)' }}>
-                  Thinking with Nemotron...
+                  Thinking...
                 </span>
               </div>
             </div>
@@ -199,7 +199,7 @@ export function AiTutorModal({ isOpen, onClose, onFlashcardsCreated }: AiTutorMo
             placeholder={
               mode === 'flashcards'
                 ? 'Enter topic or paste notes to generate cards...'
-                : 'Ask Nemotron a question or explain a concept...'
+                : 'Ask a question or describe what you want to revise...'
             }
             value={input}
             onChange={(e) => setInput(e.target.value)}
