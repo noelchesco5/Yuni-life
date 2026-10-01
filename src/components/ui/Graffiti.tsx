@@ -221,7 +221,7 @@ export function Graffiti({
     case 'tag-poa':
       return (
         <span className={combinedClass} style={{ color, ...style }}>
-          Poa ✦
+          Poa!
         </span>
       );
 

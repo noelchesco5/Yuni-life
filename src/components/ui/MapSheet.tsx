@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MUHAS_CAMPUS_CENTER, MUHAS_VENUES, type Venue } from '../../lib/venues';
+import { CompassIcon } from './Icons';
 import './MapSheet.css';
 
 export type MapMode = 'navigate' | 'view-venue' | 'claim-venue' | 'show-location' | 'pick-location';
@@ -167,7 +168,10 @@ export function MapSheet({
             </p>
           </div>
           <button className="btn btn--ghost btn--sm mapsheet__close" onClick={onClose} aria-label="Close">
-            ✕
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
@@ -175,7 +179,9 @@ export function MapSheet({
         {mode === 'navigate' && walkingEstimate && (
           <div className="mapsheet__nav-banner">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div className="mapsheet__walk-badge">🚶</div>
+              <div className="mapsheet__walk-badge" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CompassIcon size={16} strokeWidth={2.2} color="var(--yuni-blue)" />
+              </div>
               <div>
                 <strong>{walkingEstimate.minutes} min walk</strong>
                 <span className="text-faint" style={{ fontSize: 12, marginLeft: 6 }}>

@@ -99,9 +99,9 @@ export function MePage() {
                     className={`chip ${theme === t ? 'chip--active' : ''}`}
                     onClick={() => setTheme(t)}
                     aria-pressed={theme === t}
-                    style={{ minHeight: 32, fontSize: 12 }}
+                    style={{ minHeight: 32, fontSize: 12, textTransform: 'capitalize' }}
                   >
-                    {t === 'light' ? '☀️' : t === 'dark' ? '🌙' : '⚙️'} {t}
+                    {t}
                   </button>
                 ))}
               </div>

@@ -3,6 +3,14 @@ import { TopBar } from '../components/layout/TopBar';
 import { useUserRole } from '../context/RoleContext';
 import { MapSheet } from '../components/ui/MapSheet';
 import { Graffiti } from '../components/ui/Graffiti';
+import {
+  MegaphoneIcon,
+  LandmarkIcon,
+  ClockIcon,
+  BarChartIcon,
+  UsersIcon,
+  ShieldCheckIcon,
+} from '../components/ui/Icons';
 import type { Venue } from '../lib/venues';
 import './Console.css';
 
@@ -39,7 +47,7 @@ export function ConsolePage() {
   const [claimedNotice, setClaimedNotice] = useState<string | null>(null);
 
   const handleClaimVenue = (venue: Venue) => {
-    setClaimedNotice(`🎉 Claim confirmed for ${venue.name} on behalf of ${currentProfile.scope}! Double-booking exclusion constraint verified.`);
+    setClaimedNotice(`Claim confirmed for ${venue.name} on behalf of ${currentProfile.scope}. Double-booking exclusion constraint verified.`);
     setClaimWindow((prev) => ({
       ...prev,
       slotsAvailable: Math.max(0, prev.slotsAvailable - 1),
@@ -147,7 +155,9 @@ export function ConsolePage() {
           <h3>Leader Tools</h3>
           <div className="console-tiles-grid">
             <div className="console-tile">
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)' }}>📢</div>
+              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <MegaphoneIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+              </div>
               <strong>Announce</strong>
               <p className="text-faint">Post scoped notice or push</p>
             </div>
@@ -159,31 +169,41 @@ export function ConsolePage() {
                 setIsMapOpen(true);
               }}
             >
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)' }}>🏛️</div>
+              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <LandmarkIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+              </div>
               <strong>Venues</strong>
               <p className="text-faint">Capacity, bookings, maps</p>
             </div>
 
             <div className="console-tile">
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)' }}>⏱️</div>
+              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ClockIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+              </div>
               <strong>Claim Windows</strong>
               <p className="text-faint">Open FCFS or lottery draw</p>
             </div>
 
             <div className="console-tile">
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)' }}>📊</div>
+              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <BarChartIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+              </div>
               <strong>Polls & Voting</strong>
               <p className="text-faint">Launch scoped student poll</p>
             </div>
 
             <div className="console-tile">
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)' }}>👥</div>
+              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <UsersIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+              </div>
               <strong>Cohort Groups</strong>
               <p className="text-faint">Manage CR cohort channels</p>
             </div>
 
             <div className="console-tile">
-              <div className="console-tile__icon" style={{ background: 'var(--surface-3)' }}>🛡️</div>
+              <div className="console-tile__icon" style={{ background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ShieldCheckIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+              </div>
               <strong>Audit Log</strong>
               <p className="text-faint">Tamper-proof capability log</p>
             </div>

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { askNemotron, generateFlashcardsWithNemotron, type ChatMessage } from '../../lib/ai/openrouter';
+import { SparklesIcon, AlertCircleIcon } from './Icons';
 import './AiTutorModal.css';
 
 interface AiTutorModalProps {
@@ -57,7 +58,7 @@ export function AiTutorModal({ isOpen, onClose, onFlashcardsCreated }: AiTutorMo
             ...newMessages,
             {
               role: 'assistant',
-              content: `✨ Generated ${cards.length} spaced-repetition flashcards and saved them to your deck:\n\n` +
+              content: `Generated ${cards.length} spaced-repetition flashcards and saved them to your deck:\n\n` +
                 cards.map((c, i) => `**Card ${i + 1}:**\n**Q:** ${c.front}\n**A:** ${c.back}`).join('\n\n'),
             },
           ]);
@@ -81,7 +82,7 @@ export function AiTutorModal({ isOpen, onClose, onFlashcardsCreated }: AiTutorMo
         ...newMessages,
         {
           role: 'assistant',
-          content: `⚠️ ${cleanMsg} You can review cached cards offline anytime.`,
+          content: `${cleanMsg} You can review cached cards offline anytime.`,
         },
       ]);
     } finally {
@@ -95,7 +96,9 @@ export function AiTutorModal({ isOpen, onClose, onFlashcardsCreated }: AiTutorMo
         {/* Header */}
         <div className="ai-modal__header">
           <div className="ai-modal__title-box">
-            <div className="ai-modal__avatar">🤖</div>
+            <div className="ai-modal__avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <SparklesIcon size={18} strokeWidth={2.2} color="var(--yuni-blue)" />
+            </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <strong>Yuni Study Companion</strong>
@@ -107,7 +110,10 @@ export function AiTutorModal({ isOpen, onClose, onFlashcardsCreated }: AiTutorMo
             </div>
           </div>
           <button className="btn btn--ghost btn--sm ai-modal__close" onClick={onClose} aria-label="Close">
-            ✕
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
@@ -118,20 +124,21 @@ export function AiTutorModal({ isOpen, onClose, onFlashcardsCreated }: AiTutorMo
             onClick={() => setMode('chat')}
             type="button"
           >
-            💬 Study Chat
+            Study Chat
           </button>
           <button
             className={`chip ${mode === 'flashcards' ? 'chip--active' : ''}`}
             onClick={() => setMode('flashcards')}
             type="button"
           >
-            ⚡ Flashcard Generator
+            Flashcard Generator
           </button>
         </div>
 
         {error && (
-          <div style={{ background: 'rgba(239, 68, 68, 0.12)', color: 'var(--yuni-alert)', padding: '6px 16px', fontSize: 12, borderBottom: '1px solid var(--border)' }}>
-            ⚠️ {error}
+          <div style={{ background: 'rgba(239, 68, 68, 0.12)', color: 'var(--yuni-alert)', padding: '6px 16px', fontSize: 12, borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <AlertCircleIcon size={14} strokeWidth={2} />
+            <span>{error}</span>
           </div>
         )}
 

@@ -1,329 +1,627 @@
-/* Spec 09 Home Screen Styles — High Polish & Brand Authenticity */
-.home-header {
-  padding: var(--space-4) 0 var(--space-2);
+/* ==========================================================================
+   YUNI HOME — VISUAL & UX RESET
+   Mobile-first, open canvas, strong typography, zero emojis.
+   Hierarchy: Typography > Content > Spacing > Interaction > Brand Accents
+   ========================================================================== */
+
+.home-canvas {
+  padding: 0 var(--space-4) 80px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.home-greeting__title {
-  font: 800 26px/1.2 var(--font-display);
-  letter-spacing: -0.03em;
+/* ==========================================================================
+   1. TOPBAR ENHANCEMENTS
+   ========================================================================== */
+.topbar-saris-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ink);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font: 800 11px/1 var(--font-display);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+}
+
+.topbar-saris-btn:hover {
+  background: var(--yuni-blue);
+  transform: translateY(-1px);
+}
+
+.topbar-saris-btn:active {
+  transform: scale(0.96);
+}
+
+/* ==========================================================================
+   2. TOP IDENTITY & GREETING
+   ========================================================================== */
+.home-top-header {
+  padding: var(--space-4) 0 var(--space-3);
+}
+
+.home-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.home-greeting-name {
+  font: 800 28px/1.15 var(--font-display);
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.home-greeting-sub {
+  font: 500 14px/1.3 var(--font-body);
+  color: var(--text-muted);
+  display: block;
+  margin-top: 2px;
+}
+
+.home-identity-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.home-role-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: 700 11px/1 var(--font-display);
+  letter-spacing: 0.02em;
   color: var(--ink);
 }
 
-.home-sync-dot {
-  width: 9px;
-  height: 9px;
+.home-live-pulse-dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--yuni-teal);
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
-  display: inline-block;
-  animation: syncPulse 2.5s infinite ease-in-out;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
+  animation: liveBeacon 2.2s infinite ease-in-out;
 }
 
-@keyframes syncPulse {
+@keyframes liveBeacon {
   0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 0.6; }
 }
 
-.home-section {
-  margin-top: var(--space-5);
-}
-
-/* ===== ONE HERO NOW CARD (Spec 09 Section 4) ===== */
-.home-now-card {
-  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
-  border-radius: 24px;
-  padding: 20px 22px;
-  box-shadow: 0 12px 36px -10px rgba(35, 71, 197, 0.16);
-  border: 1.5px solid rgba(35, 71, 197, 0.22);
+/* ==========================================================================
+   3. THE HERO: ONE DOMINANT NOW STAGE (Center of Gravity)
+   ========================================================================== */
+.home-now-stage {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1.5px solid rgba(35, 71, 197, 0.18);
+  padding: 22px 20px 16px;
+  box-shadow: 0 8px 30px -8px rgba(35, 71, 197, 0.12);
   position: relative;
   overflow: hidden;
-  transition: transform var(--duration-fast) var(--ease-out),
-              box-shadow var(--duration-fast) var(--ease-out);
+  margin-top: var(--space-2);
+  transition: border-color var(--duration-normal) var(--ease-out),
+              box-shadow var(--duration-normal) var(--ease-out);
 }
 
-.home-now-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: var(--grad-focus);
+/* State variants */
+.home-now-stage--in_class {
+  border-color: rgba(16, 185, 129, 0.28);
+  box-shadow: 0 8px 30px -8px rgba(16, 185, 129, 0.1);
 }
 
-.home-now-card__badge-row {
+.home-now-stage--free_gap {
+  border-color: rgba(14, 165, 233, 0.25);
+  box-shadow: 0 8px 30px -8px rgba(14, 165, 233, 0.1);
+}
+
+.home-now-stage--exam_approaching {
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: 0 8px 30px -8px rgba(245, 158, 11, 0.12);
+}
+
+.home-now-meta-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.home-now-pill {
-  font: 900 11px var(--font-display);
-  letter-spacing: 0.08em;
-  background: var(--yuni-blue);
-  color: #FFFFFF;
-  padding: 3px 9px;
+.home-now-state-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-2);
+  padding: 4px 10px;
   border-radius: 6px;
+  font: 800 10.5px/1 var(--font-display);
+  letter-spacing: 0.08em;
+  color: var(--ink);
   text-transform: uppercase;
 }
 
-.home-now-dots {
-  display: flex;
-  gap: 5px;
-}
-
-.home-now-dot {
+.home-now-pulse-beacon {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--border);
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--yuni-blue);
+  animation: liveBeacon 2s infinite ease-in-out;
 }
 
-.home-now-dot--active {
-  width: 16px;
-  border-radius: 3px;
+.home-now-stage--in_class .home-now-pulse-beacon {
+  background: var(--yuni-teal);
+}
+
+.home-now-stage--exam_approaching .home-now-pulse-beacon {
+  background: #F59E0B;
+}
+
+.home-now-stepper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.home-now-step-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+}
+
+.home-now-step-dot--active {
+  width: 18px;
+  border-radius: 4px;
   background: var(--yuni-blue);
 }
 
-.home-now-card__body {
-  margin-top: 14px;
-}
-
-.home-now-card__title {
-  font: 800 24px/1.2 var(--font-display);
-  letter-spacing: -0.03em;
-  color: var(--ink);
-}
-
-.home-now-card__venue {
-  font: 600 14px var(--font-body);
-  color: var(--text-muted);
-  margin-top: 5px;
-}
-
-.home-now-card__timing {
-  margin-top: 10px;
-}
-
-.home-now-card__actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Big Typography Hierarchy */
+.home-now-focus {
   margin-top: 18px;
 }
 
-.home-now-btn {
-  flex: 1;
-  font-size: 15px;
+.home-now-course-code {
+  font: 900 32px/1.05 var(--font-display);
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  margin: 0;
+  text-transform: uppercase;
 }
 
-/* ===== STUDLY LAUNCHER (Spec 09 Section 4) ===== */
-.studly-launcher-section {
-  background: #FFFFFF;
-  border-radius: 22px;
-  padding: var(--space-4);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 20px -6px rgba(15, 23, 42, 0.06);
+.home-now-venue-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
 }
 
-.studly-launcher-title {
-  font: 800 15px var(--font-display);
-  letter-spacing: -0.01em;
+.home-now-venue-text {
+  font: 700 15px/1.3 var(--font-body);
   color: var(--ink);
 }
 
-.studly-chips-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 2px;
+.home-now-time-context {
+  font: 500 13px/1.4 var(--font-body);
+  color: var(--text-muted);
+  margin: 4px 0 0 0;
 }
 
-.studly-chips-row::-webkit-scrollbar {
+/* Crisp Divider */
+.home-now-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.07);
+  margin: 18px 0 16px;
+}
+
+/* Dominant CTA Button (compress -> spring on active) */
+.home-now-primary-cta {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--yuni-blue);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 14px;
+  font: 800 14px/1 var(--font-display);
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px -2px rgba(35, 71, 197, 0.35);
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.12s ease-out,
+              background 0.12s ease-out;
+}
+
+.home-now-primary-cta:hover {
+  background: #1B3BAA;
+  box-shadow: 0 6px 20px -2px rgba(35, 71, 197, 0.45);
+}
+
+.home-now-primary-cta:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 8px -2px rgba(35, 71, 197, 0.3);
+}
+
+/* Subtle Next Peek Row */
+.home-now-peek-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  user-select: none;
+}
+
+.home-now-peek-label {
+  font: 800 10.5px/1 var(--font-display);
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+.home-now-peek-title {
+  font: 600 12.5px/1 var(--font-body);
+  color: var(--text-muted);
+  flex: 1;
+  margin: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   4. STUDLY LAUNCHER: OPEN TYPOGRAPHY & TACTILE PILLS
+   ========================================================================== */
+.home-studly-launcher {
+  margin-top: var(--space-5);
+}
+
+.home-subhead-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.home-subhead-text {
+  font: 800 12.5px/1 var(--font-display);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.home-subhead-action {
+  font: 700 11.5px/1 var(--font-body);
+  color: var(--yuni-blue);
+  cursor: pointer;
+}
+
+.home-studly-pills-rail {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.home-studly-pills-rail::-webkit-scrollbar {
   display: none;
 }
 
-.studly-launcher-chip {
+.home-studly-pill {
   flex-shrink: 0;
-  background: var(--surface-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  background: #FFFFFF;
   border: 1px solid var(--border);
   border-radius: 999px;
-  font: 700 13px var(--font-body);
-  padding: 0 16px;
-  min-height: 38px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-  transition: all 0.15s ease-out;
+  font: 800 11.5px/1 var(--font-display);
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.studly-launcher-chip:hover {
-  background: var(--surface-3);
+.home-studly-pill:hover {
   border-color: var(--yuni-blue);
   color: var(--yuni-blue);
   transform: translateY(-1px);
 }
 
-.studly-launcher-chip:active {
-  transform: translateY(1px) scale(0.97);
+.home-studly-pill:active {
+  transform: scale(0.96);
 }
 
-/* ===== PULSE STRIP (Spec 09 Section 4) ===== */
-.pulse-header-tag {
-  font: 800 12px var(--font-display);
+.home-studly-pill--accent {
+  background: var(--surface-2);
+  border-color: rgba(35, 71, 197, 0.25);
+  color: var(--yuni-blue);
+}
+
+/* Separator */
+.home-section-separator {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: var(--space-5) 0;
+}
+
+/* ==========================================================================
+   5. PULSE: LIVE CAMPUS HORIZONTAL RAIL
+   ========================================================================== */
+.home-pulse-section {
+  /* open layout */
+}
+
+.home-pulse-header-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.home-pulse-rail {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.home-pulse-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.home-pulse-card {
+  flex: 0 0 230px;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: transform 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+.home-pulse-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--yuni-blue);
+}
+
+.home-pulse-card--urgent {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: #FFFDFC;
+}
+
+.home-pulse-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.home-pulse-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: 800 10px/1 var(--font-display);
   letter-spacing: 0.05em;
+  color: var(--text-muted);
   text-transform: uppercase;
+}
+
+.home-pulse-tag--urgent {
+  color: #DC2626;
+}
+
+.home-pulse-tag--sports {
+  color: var(--yuni-teal);
+}
+
+.home-pulse-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font: 800 11px/1 var(--font-mono);
+  color: #DC2626;
+}
+
+.home-pulse-time {
+  font: 500 11px/1 var(--font-body);
   color: var(--text-faint);
 }
 
-.pulse-strip {
+.home-pulse-card__title {
+  font: 800 14px/1.2 var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 10px 0 3px;
+}
+
+.home-pulse-card__desc {
+  font: 500 12px/1.3 var(--font-body);
+  color: var(--text-muted);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   6. CAMPUS FEED: EDITORIAL POSTS (ZERO EMOJIS)
+   ========================================================================== */
+.home-feed-section {
+  /* open layout */
+}
+
+.home-feed-filter-group {
   display: flex;
-  gap: var(--space-3);
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding: 4px 0 8px;
+  gap: 6px;
 }
 
-.pulse-strip::-webkit-scrollbar {
-  display: none;
-}
-
-.pulse-tile {
-  flex: 0 0 220px;
-  background: #FFFFFF;
-  border: 1.5px solid var(--border);
-  border-radius: 20px;
-  padding: 14px 16px;
-  box-shadow: var(--shadow-card);
+.home-feed-filter-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font: 700 11px/1 var(--font-display);
+  color: var(--text-muted);
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.15s ease-out;
 }
 
-.pulse-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-elevated);
+.home-feed-filter-btn--active {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--ink);
 }
 
-.pulse-tile--urgent {
-  border-color: rgba(239, 68, 68, 0.35);
-  background: #FFFDFD;
-}
-
-/* ===== CAMPUS FEED (Spec 09 Section 6) ===== */
-.home-feed-filters {
+.home-feed-stream {
   display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-  overflow-x: auto;
-  scrollbar-width: none;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: 4px;
 }
 
-.home-feed-filters::-webkit-scrollbar {
-  display: none;
-}
-
-.home-feed-posts {
-  display: grid;
-  gap: var(--space-4);
-}
-
-.home-post-card {
+.home-post-item {
   background: #FFFFFF;
   border: 1px solid var(--border);
-  border-radius: 22px;
-  padding: 18px 20px;
-  box-shadow: 0 4px 18px -4px rgba(15, 23, 42, 0.05);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
-.home-post__official-ribbon {
+.home-post-official-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(35, 71, 197, 0.08);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font: 800 10.5px/1 var(--font-display);
+  color: var(--yuni-blue);
   margin-bottom: 10px;
 }
 
-.home-post__header {
+.home-post-header {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  align-items: flex-start;
+  gap: 8px;
 }
 
-.home-post__body {
-  font: 500 14.5px/1.6 var(--font-body);
+.home-post-author {
+  font: 800 14px/1.2 var(--font-display);
+  color: var(--ink);
+}
+
+.home-post-meta {
+  font: 500 11.5px/1 var(--font-body);
+  color: var(--text-faint);
+}
+
+.home-post-body {
+  font: 500 14px/1.5 var(--font-body);
   color: var(--text);
-  margin-top: 10px;
+  margin: 10px 0 0 0;
 }
 
-.home-post__location-chip {
+.home-post-location-tag {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 6px 12px;
-  font: 600 12px var(--font-body);
+  font: 600 12px/1 var(--font-body);
   color: var(--ink);
   cursor: pointer;
   margin-top: 12px;
-  text-align: left;
-  transition: background 0.15s ease;
+  transition: all 0.15s ease-out;
 }
 
-.home-post__location-chip:hover {
-  background: var(--surface-3);
+.home-post-location-tag:hover {
   border-color: var(--yuni-blue);
+  background: #FFFFFF;
 }
 
-/* Sticker Slap Reactions (Spec 09 Section 6 & 13) */
-.home-post__stickers-row {
+.home-post-location-cta {
+  color: var(--yuni-blue);
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+/* Reactions Bar — Zero Emojis, Pure Tactile Stamps */
+.home-post-reactions-bar {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.home-sticker-btn {
+.home-reaction-stamp {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  min-height: 32px;
-  padding: 3px 10px;
-  border-radius: 16px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--surface-2);
-  font: 700 13px var(--font-body);
+  font: 700 11.5px/1 var(--font-display);
+  color: var(--ink);
   cursor: pointer;
   user-select: none;
-  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
-              background 0.15s ease;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background 0.12s ease-out,
+              border-color 0.12s ease-out;
 }
 
-.home-sticker-btn:hover {
+.home-reaction-stamp:hover {
   background: #FFFFFF;
   border-color: var(--yuni-blue);
 }
 
-.home-sticker-btn:active {
+.home-reaction-stamp:active {
   transform: scale(0.92);
 }
 
-.home-sticker-btn--slapped {
-  background: rgba(255, 214, 10, 0.28);
+.home-reaction-stamp--selected {
+  background: rgba(255, 214, 10, 0.22);
   border-color: var(--yuni-sun);
-  transform: rotate(-2deg) scale(1.06);
-  animation: stickerSlap 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: rotate(-1.5deg) scale(1.04);
 }
 
-@keyframes stickerSlap {
-  0% { transform: scale(0.8) rotate(0deg); }
-  50% { transform: scale(1.18) rotate(4deg); }
-  100% { transform: scale(1.06) rotate(-2deg); }
+.home-reaction-key {
+  font-weight: 800;
 }
 
-.home-sticker-count {
-  font-size: 11px;
+.home-reaction-count {
+  font-size: 10.5px;
   color: var(--text-faint);
   font-weight: 700;
 }

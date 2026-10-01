@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { TopBar } from '../components/layout/TopBar';
 import { AiTutorModal } from '../components/ui/AiTutorModal';
+import { FlameIcon } from '../components/ui/Icons';
 import './Study.css';
 
 export function StudyPage() {
@@ -98,7 +99,7 @@ export function StudyPage() {
         {/* Streak */}
         <section className="study-section">
           <div className="study-streak">
-            <span className="study-streak__flame">🔥</span>
+            <FlameIcon size={24} color="#F59E0B" strokeWidth={2.2} />
             <div>
               <strong className="num">5 day streak</strong>
               <p className="text-faint" style={{ fontSize: 13 }}>Keep it up!</p>

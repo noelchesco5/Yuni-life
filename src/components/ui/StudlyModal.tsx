@@ -2,6 +2,13 @@ import { useState } from 'react';
 import { useInAppBrowser } from '../../context/InAppBrowserContext';
 import { askNemotron } from '../../lib/ai/openrouter';
 import { Graffiti } from './Graffiti';
+import {
+  LayersIcon,
+  FileCheckIcon,
+  AlignLeftIcon,
+  BookOpenIcon,
+  SearchIcon,
+} from './Icons';
 import './StudlyModal.css';
 
 export type StudlyMode = 'flashcards' | 'exam' | 'summary' | 'keyterms' | 'cheatsheet' | 'auto';
@@ -135,7 +142,7 @@ Output ONLY valid JSON without markdown formatting:
             <span className="badge badge--blue" style={{ fontSize: 10 }}>Revision</span>
           </div>
           <button className="btn btn--ghost btn--sm studly-modal__close" onClick={onClose} aria-label="Close">
-            ✕ Done
+            Done
           </button>
         </header>
 
@@ -143,10 +150,10 @@ Output ONLY valid JSON without markdown formatting:
         <div className="studly-modes-strip">
           {(
             [
-              { key: 'flashcards', label: '⚡ Flashcards' },
-              { key: 'exam', label: '📝 Exam' },
-              { key: 'summary', label: '📋 Summary' },
-              { key: 'keyterms', label: '📖 Key terms' },
+              { key: 'flashcards', label: 'Flashcards', icon: <LayersIcon size={14} strokeWidth={2} /> },
+              { key: 'exam', label: 'Exam Drill', icon: <FileCheckIcon size={14} strokeWidth={2} /> },
+              { key: 'summary', label: 'Summary', icon: <AlignLeftIcon size={14} strokeWidth={2} /> },
+              { key: 'keyterms', label: 'Key Terms', icon: <BookOpenIcon size={14} strokeWidth={2} /> },
             ] as const
           ).map((item) => (
             <button
@@ -159,8 +166,10 @@ Output ONLY valid JSON without markdown formatting:
                 setGeneratedSummary(null);
               }}
               type="button"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
             >
-              {item.label}
+              {item.icon}
+              <span>{item.label}</span>
             </button>
           ))}
         </div>
@@ -273,8 +282,10 @@ Output ONLY valid JSON without markdown formatting:
                   className="btn btn--joy btn--sm"
                   onClick={() => handleSearchGoogle(generatedFlashcards[currentCardIndex].front)}
                   title="Opens Google in in-app browser"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}
                 >
-                  🔍 Not clear? Search this
+                  <SearchIcon size={13} strokeWidth={2.2} />
+                  <span>Not clear? Search this</span>
                 </button>
 
                 <button
@@ -344,10 +355,11 @@ Output ONLY valid JSON without markdown formatting:
                         </p>
                         <button
                           className="btn btn--ghost btn--sm"
-                          style={{ marginTop: 6, fontSize: 11 }}
+                          style={{ marginTop: 6, fontSize: 11, display: 'inline-flex', alignItems: 'center', gap: 4 }}
                           onClick={() => handleSearchGoogle(q.stem)}
                         >
-                          🔍 Not clear? Search this
+                          <SearchIcon size={12} strokeWidth={2} />
+                          <span>Not clear? Search this</span>
                         </button>
                       </div>
                     )}
@@ -398,8 +410,10 @@ Output ONLY valid JSON without markdown formatting:
                         className="studly-inline-search"
                         onClick={() => handleSearchGoogle(b)}
                         title="Search in in-app browser"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
                       >
-                        🔍 Search
+                        <SearchIcon size={11} strokeWidth={2} />
+                        <span>Search</span>
                       </button>
                     </li>
                   ))}

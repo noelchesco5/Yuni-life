@@ -3,6 +3,7 @@ import { TopBar } from '../components/layout/TopBar';
 import { useUserRole } from '../context/RoleContext';
 import { Graffiti } from '../components/ui/Graffiti';
 import { MapSheet } from '../components/ui/MapSheet';
+import { MapPinIcon } from '../components/ui/Icons';
 import './Chat.css';
 
 interface Circle {
@@ -35,11 +36,11 @@ export function ChatPage() {
 
   // Top rail "Circles" (Spec 09 Section 7)
   const circles: Circle[] = [
-    { id: 'off-welfare', name: 'Welfare Ministry', avatar: '🏛️', ringColor: 'teal', unreadCount: 1 },
-    { id: 'class-md2', name: 'MD Year 2', avatar: '🩺', ringColor: 'blue', unreadCount: 3 },
-    { id: 'anat-grp', name: 'Anatomy L4', avatar: '🧠', ringColor: 'sun', unreadCount: 2 },
+    { id: 'off-welfare', name: 'Welfare Ministry', avatar: 'WM', ringColor: 'teal', unreadCount: 1 },
+    { id: 'class-md2', name: 'MD Year 2', avatar: 'MD', ringColor: 'blue', unreadCount: 3 },
+    { id: 'anat-grp', name: 'Anatomy L4', avatar: 'AN', ringColor: 'sun', unreadCount: 2 },
     { id: 'dm-noel', name: 'Minister Noel', avatar: 'NC', ringColor: 'teal' },
-    { id: 'sports-fc', name: 'MUHAS FC', avatar: '⚽', ringColor: 'blue' },
+    { id: 'sports-fc', name: 'MUHAS FC', avatar: 'FC', ringColor: 'blue' },
   ];
 
   // Wall-style conversation messages (Spec 09 Section 7: "single column, everyone left-aligned, yellow smile-underline on your messages")
@@ -203,10 +204,12 @@ export function ChatPage() {
                     setIsMapOpen(true);
                   }}
                   type="button"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
                 >
-                  📍 <strong>{m.location.name}</strong>
-                  <span style={{ fontSize: 11, color: 'var(--yuni-blue)', marginLeft: 6 }}>
-                    · Open Directions ➜
+                  <MapPinIcon size={14} strokeWidth={2.2} color="var(--yuni-blue)" />
+                  <strong>{m.location.name}</strong>
+                  <span style={{ fontSize: 11, color: 'var(--yuni-blue)', marginLeft: 4 }}>
+                    · Open Directions &rarr;
                   </span>
                 </button>
               )}
@@ -217,7 +220,7 @@ export function ChatPage() {
         {/* Composer Bar with Sticker Tray (Spec 09 Section 7) */}
         <div className="chat-composer-box">
           <div className="chat-sticker-shortcuts">
-            {['Hop!', 'Mambo!', 'Poa ✦', 'Sawa!', '🔥', '📚'].map((s) => (
+            {['Hop!', 'Mambo!', 'Poa', 'Sawa!', 'Vipi', 'Tuko LT'].map((s) => (
               <button
                 key={s}
                 className="chip chip--sm"
