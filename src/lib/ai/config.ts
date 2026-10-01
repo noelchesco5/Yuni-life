@@ -10,11 +10,10 @@ export const NEMOTRON_CONFIG = {
   // Primary model — 1M context, blazing fast, 0 cost
   primaryModel: (import.meta.env.VITE_OPENROUTER_PRIMARY_MODEL as string) || 'nvidia/nemotron-3.5-lightning:free',
 
-  // Fallback models within the generous Nemotron family
+  // Fallback models within the generous Nemotron family (OpenRouter allows max 3 models total)
   fallbackModels: [
     'nvidia/nemotron-3-super-120b-a12b:free',
     'nvidia/nemotron-3-ultra-550b-a55b:free',
-    'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
   ],
 
   // OpenRouter endpoints

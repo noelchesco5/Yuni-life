@@ -1,21 +1,27 @@
-/* Spec 09 Home Screen Styles */
+/* Spec 09 Home Screen Styles — High Polish & Brand Authenticity */
 .home-header {
   padding: var(--space-4) 0 var(--space-2);
 }
 
 .home-greeting__title {
-  font: 800 24px var(--font-display);
-  letter-spacing: -0.02em;
+  font: 800 26px/1.2 var(--font-display);
+  letter-spacing: -0.03em;
   color: var(--ink);
 }
 
 .home-sync-dot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--yuni-teal);
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
   display: inline-block;
+  animation: syncPulse 2.5s infinite ease-in-out;
+}
+
+@keyframes syncPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
 }
 
 .home-section {
@@ -24,11 +30,11 @@
 
 /* ===== ONE HERO NOW CARD (Spec 09 Section 4) ===== */
 .home-now-card {
-  background: #FFFFFF;
-  border-radius: var(--radius-card);
-  padding: var(--space-5);
-  box-shadow: 0 10px 30px -10px rgba(35, 71, 197, 0.15);
-  border: 1.5px solid rgba(35, 71, 197, 0.2);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+  border-radius: 24px;
+  padding: 20px 22px;
+  box-shadow: 0 12px 36px -10px rgba(35, 71, 197, 0.16);
+  border: 1.5px solid rgba(35, 71, 197, 0.22);
   position: relative;
   overflow: hidden;
   transition: transform var(--duration-fast) var(--ease-out),
@@ -41,7 +47,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
+  height: 5px;
   background: var(--grad-focus);
 }
 
@@ -56,14 +62,14 @@
   letter-spacing: 0.08em;
   background: var(--yuni-blue);
   color: #FFFFFF;
-  padding: 3px 8px;
+  padding: 3px 9px;
   border-radius: 6px;
   text-transform: uppercase;
 }
 
 .home-now-dots {
   display: flex;
-  gap: 4px;
+  gap: 5px;
 }
 
 .home-now-dot {
@@ -72,63 +78,66 @@
   border-radius: 50%;
   background: var(--border);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .home-now-dot--active {
-  width: 14px;
+  width: 16px;
   border-radius: 3px;
   background: var(--yuni-blue);
 }
 
 .home-now-card__body {
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 .home-now-card__title {
-  font: 800 22px var(--font-display);
-  letter-spacing: -0.02em;
+  font: 800 24px/1.2 var(--font-display);
+  letter-spacing: -0.03em;
   color: var(--ink);
 }
 
 .home-now-card__venue {
   font: 600 14px var(--font-body);
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 5px;
 }
 
 .home-now-card__timing {
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .home-now-card__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 .home-now-btn {
   flex: 1;
+  font-size: 15px;
 }
 
 /* ===== STUDLY LAUNCHER (Spec 09 Section 4) ===== */
 .studly-launcher-section {
-  background: var(--surface-2);
-  border-radius: var(--radius-card);
+  background: #FFFFFF;
+  border-radius: 22px;
   padding: var(--space-4);
   border: 1px solid var(--border);
+  box-shadow: 0 4px 20px -6px rgba(15, 23, 42, 0.06);
 }
 
 .studly-launcher-title {
-  font: 800 14px var(--font-display);
+  font: 800 15px var(--font-display);
+  letter-spacing: -0.01em;
   color: var(--ink);
 }
 
 .studly-chips-row {
   display: flex;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
   overflow-x: auto;
   scrollbar-width: none;
   padding-bottom: 2px;
@@ -140,23 +149,33 @@
 
 .studly-launcher-chip {
   flex-shrink: 0;
-  background: #FFFFFF;
+  background: var(--surface-2);
   border: 1px solid var(--border);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  border-radius: 999px;
+  font: 700 13px var(--font-body);
+  padding: 0 16px;
+  min-height: 38px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: all 0.15s ease-out;
 }
 
 .studly-launcher-chip:hover {
   background: var(--surface-3);
   border-color: var(--yuni-blue);
   color: var(--yuni-blue);
+  transform: translateY(-1px);
+}
+
+.studly-launcher-chip:active {
+  transform: translateY(1px) scale(0.97);
 }
 
 /* ===== PULSE STRIP (Spec 09 Section 4) ===== */
 .pulse-header-tag {
   font: 800 12px var(--font-display);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-faint);
 }
 
 .pulse-strip {
@@ -164,7 +183,7 @@
   gap: var(--space-3);
   overflow-x: auto;
   scrollbar-width: none;
-  padding: 4px 0 6px;
+  padding: 4px 0 8px;
 }
 
 .pulse-strip::-webkit-scrollbar {
@@ -172,11 +191,11 @@
 }
 
 .pulse-tile {
-  flex: 0 0 210px;
+  flex: 0 0 220px;
   background: #FFFFFF;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 14px 16px;
   box-shadow: var(--shadow-card);
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -188,15 +207,15 @@
 }
 
 .pulse-tile--urgent {
-  border-color: rgba(239, 68, 68, 0.3);
-  background: #FFFBFB;
+  border-color: rgba(239, 68, 68, 0.35);
+  background: #FFFDFD;
 }
 
 /* ===== CAMPUS FEED (Spec 09 Section 6) ===== */
 .home-feed-filters {
   display: flex;
-  gap: 6px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 14px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -207,18 +226,19 @@
 
 .home-feed-posts {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .home-post-card {
   background: #FFFFFF;
   border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: var(--space-4);
+  border-radius: 22px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 18px -4px rgba(15, 23, 42, 0.05);
 }
 
 .home-post__official-ribbon {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .home-post__header {
@@ -228,54 +248,56 @@
 }
 
 .home-post__body {
-  font: 500 14px/1.55 var(--font-body);
+  font: 500 14.5px/1.6 var(--font-body);
   color: var(--text);
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .home-post__location-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 4px 10px;
+  border-radius: 10px;
+  padding: 6px 12px;
   font: 600 12px var(--font-body);
   color: var(--ink);
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 12px;
   text-align: left;
+  transition: background 0.15s ease;
 }
 
 .home-post__location-chip:hover {
   background: var(--surface-3);
+  border-color: var(--yuni-blue);
 }
 
 /* Sticker Slap Reactions (Spec 09 Section 6 & 13) */
 .home-post__stickers-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
-  padding-top: 10px;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
   border-top: 1px solid var(--border);
 }
 
 .home-sticker-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  min-height: 28px;
-  padding: 2px 8px;
-  border-radius: 14px;
+  gap: 5px;
+  min-height: 32px;
+  padding: 3px 10px;
+  border-radius: 16px;
   border: 1px solid var(--border);
   background: var(--surface-2);
-  font: 600 12px var(--font-body);
+  font: 700 13px var(--font-body);
   cursor: pointer;
   user-select: none;
-  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1),
-              background 0.12s ease;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background 0.15s ease;
 }
 
 .home-sticker-btn:hover {
@@ -288,19 +310,20 @@
 }
 
 .home-sticker-btn--slapped {
-  background: rgba(255, 214, 10, 0.25);
+  background: rgba(255, 214, 10, 0.28);
   border-color: var(--yuni-sun);
-  transform: rotate(-1.5deg) scale(1.05);
+  transform: rotate(-2deg) scale(1.06);
   animation: stickerSlap 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes stickerSlap {
   0% { transform: scale(0.8) rotate(0deg); }
-  50% { transform: scale(1.2) rotate(4deg); }
-  100% { transform: scale(1.05) rotate(-1.5deg); }
+  50% { transform: scale(1.18) rotate(4deg); }
+  100% { transform: scale(1.06) rotate(-2deg); }
 }
 
 .home-sticker-count {
   font-size: 11px;
   color: var(--text-faint);
+  font-weight: 700;
 }

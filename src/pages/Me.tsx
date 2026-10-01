@@ -36,7 +36,7 @@ export function MePage() {
         {/* SARIS Button (Spec 09 Section 3: Opens in In-App Browser) */}
         <button
           className="btn btn--primary btn--lg me-saris-btn"
-          onClick={() => openInAppBrowser('https://saris.muhas.ac.tz', 'SARIS Student Portal · MUHAS')}
+          onClick={() => openInAppBrowser('https://saris2.muhas.ac.tz/', 'SARIS Student Portal · MUHAS')}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />

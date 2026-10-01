@@ -69,13 +69,19 @@ export function AiTutorModal({ isOpen, onClose, onFlashcardsCreated }: AiTutorMo
         setMessages([...newMessages, { role: 'assistant', content: response }]);
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Unable to reach study assistant.';
-      setError(msg);
+      const rawMsg = err instanceof Error ? err.message : '';
+      let cleanMsg = 'Unable to connect to the study assistant.';
+      if (rawMsg.includes('quota') || rawMsg.includes('rate limit') || rawMsg.includes('429')) {
+        cleanMsg = 'Daily study quota temporarily reached. Please try again shortly or use your personal key.';
+      } else if (rawMsg.includes('network') || rawMsg.includes('Failed to fetch')) {
+        cleanMsg = 'Network connection offline. Local notes remain available.';
+      }
+      setError(cleanMsg);
       setMessages([
         ...newMessages,
         {
           role: 'assistant',
-          content: `⚠️ Couldn't complete that request: ${msg}. Please check your connection or try again shortly.`,
+          content: `⚠️ ${cleanMsg} You can review cached cards offline anytime.`,
         },
       ]);
     } finally {

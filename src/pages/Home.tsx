@@ -119,7 +119,7 @@ export function HomePage() {
         actions={
           <button
             className="btn btn--ghost btn--sm"
-            onClick={() => openInAppBrowser('https://saris.muhas.ac.tz', 'SARIS Portal · MUHAS')}
+            onClick={() => openInAppBrowser('https://saris2.muhas.ac.tz/', 'SARIS Portal · MUHAS')}
             aria-label="Open SARIS"
           >
             SARIS ↗

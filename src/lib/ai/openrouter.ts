@@ -115,8 +115,8 @@ export async function askNemotron(
     return responseCache.get(cacheKey)!;
   }
 
-  // Multi-tier Nemotron fallback list
-  const modelsToTry = [NEMOTRON_CONFIG.primaryModel, ...NEMOTRON_CONFIG.fallbackModels];
+  // Multi-tier Nemotron fallback list (strictly capped at 3 items for OpenRouter)
+  const modelsToTry = [NEMOTRON_CONFIG.primaryModel, ...NEMOTRON_CONFIG.fallbackModels].slice(0, 3);
 
   let lastError: Error | null = null;
 
@@ -133,7 +133,6 @@ export async function askNemotron(
         },
         body: JSON.stringify({
           model,
-          // OpenRouter fallback support
           models: modelsToTry,
           route: 'fallback',
           messages: fullMessages,
@@ -144,14 +143,23 @@ export async function askNemotron(
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`OpenRouter (${model}) error [${response.status}]: ${errorText}`);
+        let message = `API request failed with status ${response.status}`;
+        try {
+          const parsed = JSON.parse(errorText);
+          if (parsed.error?.message) {
+            message = parsed.error.message;
+          }
+        } catch {
+          // keep fallback message
+        }
+        throw new Error(message);
       }
 
       const data = await response.json();
       const content = data.choices?.[0]?.message?.content;
 
       if (!content) {
-        throw new Error(`Empty response from ${model}`);
+        throw new Error(`Empty response returned by language model`);
       }
 
       // Cache result
@@ -159,8 +167,8 @@ export async function askNemotron(
       return content;
     } catch (err: unknown) {
       lastError = err instanceof Error ? err : new Error(String(err));
-      console.warn(`Model ${model} failed, trying fallback...`, err);
-      // Loop continues to next model
+      console.warn(`Model ${model} request failed:`, lastError.message);
+      // Loop continues to next model fallback
     }
   }
 
