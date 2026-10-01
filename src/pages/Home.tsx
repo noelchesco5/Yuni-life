@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { TopBar } from '../components/layout/TopBar';
 import { useUserRole } from '../context/RoleContext';
 import { useInAppBrowser } from '../context/InAppBrowserContext';
@@ -204,6 +204,21 @@ export function HomePage() {
     );
   };
 
+  // Live pulse countdown timer that ticks every second (Spec 09 §4)
+  const [pulseSeconds, setPulseSeconds] = useState(252); // 04:12 initial
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPulseSeconds((prev) => (prev > 0 ? prev - 1 : 300));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatCountdown = (totalSec: number) => {
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
   const getGreetingTime = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'good morning';
@@ -249,10 +264,16 @@ export function HomePage() {
         <header className="home-top-header">
           <div className="home-top-row">
             <div>
-              <h1 className="home-greeting-name">
-                Mambo, {currentProfile.name.split(' ')[0]}
-              </h1>
-              <span className="home-greeting-sub">{getGreetingTime()}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <h1 className="home-greeting-name">
+                  Mambo, {currentProfile.name.split(' ')[0]}
+                </h1>
+                <Graffiti type="tag-hop" color="var(--yuni-sun)" width={42} height={20} />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span className="home-greeting-sub">{getGreetingTime()}</span>
+                <Graffiti type="smile-underline" color="var(--yuni-sun)" width={45} height={7} />
+              </div>
             </div>
 
             <div className="home-identity-pill">
@@ -314,7 +335,7 @@ export function HomePage() {
           {/* Primary Action Button — Visual Center of Gravity */}
           <div className="home-now-action-bar">
             <button
-              className="home-now-primary-cta"
+              className="home-now-primary-cta btn-hop"
               onClick={handleNowPrimaryAction}
               type="button"
             >
@@ -347,7 +368,7 @@ export function HomePage() {
 
           <div className="home-studly-pills-rail">
             <button
-              className="home-studly-pill"
+              className="home-studly-pill btn-hop"
               onClick={() => {
                 setStudlyMode('flashcards');
                 setIsStudlyOpen(true);
@@ -359,7 +380,7 @@ export function HomePage() {
             </button>
 
             <button
-              className="home-studly-pill"
+              className="home-studly-pill btn-hop"
               onClick={() => {
                 setStudlyMode('exam');
                 setIsStudlyOpen(true);
@@ -371,7 +392,7 @@ export function HomePage() {
             </button>
 
             <button
-              className="home-studly-pill"
+              className="home-studly-pill btn-hop"
               onClick={() => {
                 setStudlyMode('summary');
                 setIsStudlyOpen(true);
@@ -383,7 +404,7 @@ export function HomePage() {
             </button>
 
             <button
-              className="home-studly-pill"
+              className="home-studly-pill btn-hop"
               onClick={() => {
                 setStudlyMode('keyterms');
                 setIsStudlyOpen(true);
@@ -395,7 +416,7 @@ export function HomePage() {
             </button>
 
             <button
-              className="home-studly-pill home-studly-pill--accent"
+              className="home-studly-pill home-studly-pill--accent btn-hop"
               onClick={() => {
                 setStudlyMode('auto');
                 setIsStudlyOpen(true);
@@ -432,10 +453,13 @@ export function HomePage() {
               tabIndex={0}
             >
               <div className="home-pulse-card__meta">
-                <span className="home-pulse-tag home-pulse-tag--urgent">VENUE RUSH</span>
+                <span className="home-pulse-tag home-pulse-tag--urgent">
+                  <span className="pulse-live-dot" style={{ marginRight: 4 }} />
+                  VENUE RUSH
+                </span>
                 <span className="home-pulse-countdown">
                   <ClockIcon size={12} strokeWidth={2.2} />
-                  <span>04:12</span>
+                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>{formatCountdown(pulseSeconds)}</span>
                 </span>
               </div>
               <h3 className="home-pulse-card__title">LT 3 Revision Booking</h3>
@@ -557,7 +581,7 @@ export function HomePage() {
                     return (
                       <button
                         key={key}
-                        className={`home-reaction-stamp ${isSelected ? 'home-reaction-stamp--selected' : ''}`}
+                        className={`home-reaction-stamp btn-hop ${isSelected ? 'home-reaction-stamp--selected sticker-slapped' : ''}`}
                         onClick={() => handleReactionClick(post.id, key)}
                         type="button"
                       >

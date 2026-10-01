@@ -98,6 +98,10 @@ export function StudlyModal({ isOpen, initialMode = 'flashcards', onClose }: Stu
   // Summary state
   const [generatedSummary, setGeneratedSummary] = useState<{ title: string; bullets: string[]; keyTerms: string[] } | null>(null);
 
+  // Document attachment and streak tracking (Spec 09 §9)
+  const [attachedDoc, setAttachedDoc] = useState<string | null>(null);
+  const [streakCount, setStreakCount] = useState<number>(0);
+
   if (!isOpen) return null;
 
   const handleGenerate = async (customPrompt?: string) => {
@@ -222,6 +226,7 @@ Output ONLY valid JSON without markdown formatting:
   const handleReviewAgain = () => {
     if (!activeDeck || activeDeck.length === 0) return;
     setSwipeAnim('left');
+    setStreakCount(0);
     setTimeout(() => {
       setNeedsReviewCount((prev) => prev + 1);
       // Re-insert current card at the back of the queue
@@ -237,6 +242,7 @@ Output ONLY valid JSON without markdown formatting:
   const handleMastered = () => {
     if (!activeDeck || activeDeck.length === 0) return;
     setSwipeAnim('right');
+    setStreakCount((s) => s + 1);
     setTimeout(() => {
       setMasteredCount((prev) => prev + 1);
       // Advance to next card or complete
@@ -331,7 +337,7 @@ Output ONLY valid JSON without markdown formatting:
                     <button
                       key={chip}
                       type="button"
-                      className="chip chip--sm"
+                      className="chip chip--sm btn-hop"
                       onClick={() => {
                         setTopicInput(chip);
                         handleGenerate(chip);
@@ -343,8 +349,50 @@ Output ONLY valid JSON without markdown formatting:
                   ))}
                 </div>
 
+                {/* Course Slides & Lecture Notes Attachment Dropzone (Spec 09 §9) */}
+                <div style={{ marginTop: 14, padding: '12px 14px', border: '1.5px dashed var(--border)', borderRadius: 'var(--radius-card)', background: 'var(--surface-2)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', color: 'var(--text-faint)' }}>
+                      ATTACH COURSE SLIDES / PDF NOTES
+                    </span>
+                    {attachedDoc && (
+                      <span className="badge badge--synced" style={{ fontSize: 10 }}>
+                        ✓ Attached
+                      </span>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {[
+                      { name: 'Anatomy_CN_V_VII_IX.pdf', meta: '24 pgs · 2.4MB', topic: 'Cranial Nerves V, VII, IX & Skull Base Anatomy' },
+                      { name: 'Physiology_Cardio_Dynamics.pptx', meta: '38 slides · 4.1MB', topic: 'Cardiovascular & Renal Hemodynamics' },
+                      { name: 'Pharm_Autonomic_Nervous.docx', meta: '18 pgs · 1.2MB', topic: 'Autonomic Nervous System & Adrenergic Agonists' },
+                    ].map((doc) => {
+                      const isSelected = attachedDoc === doc.name;
+                      return (
+                        <button
+                          key={doc.name}
+                          type="button"
+                          className={`chip chip--sm btn-hop ${isSelected ? 'chip--active' : ''}`}
+                          onClick={() => {
+                            if (isSelected) {
+                              setAttachedDoc(null);
+                            } else {
+                              setAttachedDoc(doc.name);
+                              setTopicInput(doc.topic);
+                            }
+                          }}
+                          style={{ fontSize: 11, padding: '4px 10px' }}
+                        >
+                          <span>📄 {doc.name.split('_')[0]} ({doc.meta.split('·')[0].trim()})</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <button
-                  className="btn btn--primary btn--lg"
+                  className="btn btn--primary btn--lg btn-hop"
                   onClick={() => handleGenerate()}
                   disabled={loading}
                   style={{ width: '100%', marginTop: 16 }}
@@ -364,13 +412,18 @@ Output ONLY valid JSON without markdown formatting:
                   <strong style={{ fontSize: 15 }}>
                     Card {currentCardIndex + 1} of {activeDeck.length}
                   </strong>
-                  <div style={{ display: 'flex', gap: 10, marginTop: 4, fontSize: 11 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4, fontSize: 11 }}>
                     <span style={{ color: 'var(--yuni-teal)', fontWeight: 700 }}>
                       ✓ {masteredCount} Mastered
                     </span>
                     <span style={{ color: '#EF4444', fontWeight: 700 }}>
                       ↺ {needsReviewCount} Review Again
                     </span>
+                    {streakCount >= 2 && (
+                      <span className="animate-hop" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '1px 8px', borderRadius: 999, background: 'rgba(255, 214, 10, 0.25)', border: '1px solid var(--yuni-sun)', fontWeight: 800, fontSize: 11, color: 'var(--ink)' }}>
+                        🔥 {streakCount} Streak!
+                      </span>
+                    )}
                   </div>
                 </div>
                 <button
@@ -487,12 +540,19 @@ Output ONLY valid JSON without markdown formatting:
             <div className="studly-exam-view">
               <div className="studly-deck-header">
                 <div>
-                  <strong style={{ fontSize: 16 }}>{generatedExam.title}</strong>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <strong style={{ fontSize: 16 }}>{generatedExam.title}</strong>
+                    {streakCount >= 2 && (
+                      <span className="animate-hop" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '1px 8px', borderRadius: 999, background: 'rgba(255, 214, 10, 0.25)', border: '1px solid var(--yuni-sun)', fontWeight: 800, fontSize: 11, color: 'var(--ink)' }}>
+                        🔥 {streakCount} Streak!
+                      </span>
+                    )}
+                  </div>
                   <p className="text-faint" style={{ fontSize: 12 }}>
                     Instant clinical reasoning feedback enabled
                   </p>
                 </div>
-                <button className="btn btn--ghost btn--sm" onClick={() => setGeneratedExam(null)}>
+                <button className="btn btn--ghost btn--sm btn-hop" onClick={() => setGeneratedExam(null)}>
                   New Exam
                 </button>
               </div>
@@ -512,7 +572,7 @@ Output ONLY valid JSON without markdown formatting:
                       <div className="studly-exam-options">
                         {q.options.map((opt, optIdx) => {
                           const isThisSelected = selectedOpt === optIdx;
-                          let optionClass = 'studly-exam-option';
+                          let optionClass = 'studly-exam-option btn-hop';
 
                           if (isAnswered) {
                             if (optIdx === q.answer) {
@@ -532,6 +592,11 @@ Output ONLY valid JSON without markdown formatting:
                               onClick={() => {
                                 if (!isAnswered) {
                                   setUserExamAnswers((prev) => ({ ...prev, [idx]: optIdx }));
+                                  if (optIdx === q.answer) {
+                                    setStreakCount((s) => s + 1);
+                                  } else {
+                                    setStreakCount(0);
+                                  }
                                 }
                               }}
                             >
@@ -566,6 +631,18 @@ Output ONLY valid JSON without markdown formatting:
                           <p style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--text)' }}>
                             {q.explanation}
                           </p>
+
+                          <div style={{ marginTop: 8 }}>
+                            <button
+                              type="button"
+                              className="btn btn--ghost btn--sm btn-hop"
+                              onClick={() => handleSearchGoogle(q.stem)}
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11 }}
+                            >
+                              <SearchIcon size={12} strokeWidth={2.2} />
+                              <span>Not clear? Search this question on Google</span>
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>

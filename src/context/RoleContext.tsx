@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
-export type UserRoleKind = 'student' | 'cr' | 'minister' | 'executive' | 'admin';
+export type UserRoleKind = 'student' | 'cr' | 'minister' | 'executive' | 'sports' | 'health' | 'election' | 'admin';
 
 export interface UserRoleProfile {
   id: string;
@@ -23,6 +23,17 @@ const DEFAULT_STUDENT: UserRoleProfile = {
   avatar: 'AM',
 };
 
+const SAMPLE_LEADER_PRESIDENT: UserRoleProfile = {
+  id: 'usr-exec',
+  name: 'Hon. Josephat Mrope',
+  kind: 'executive',
+  title: 'MUHASSO President',
+  ministry: 'Executive Government',
+  scope: 'global',
+  isLeader: true,
+  avatar: 'JM',
+};
+
 const SAMPLE_LEADER_MINISTER: UserRoleProfile = {
   id: 'usr-2',
   name: 'Noel Chesco',
@@ -32,6 +43,28 @@ const SAMPLE_LEADER_MINISTER: UserRoleProfile = {
   scope: 'ministry:welfare',
   isLeader: true,
   avatar: 'NC',
+};
+
+const SAMPLE_LEADER_HEALTH: UserRoleProfile = {
+  id: 'usr-hlth',
+  name: 'Grace Mallya',
+  kind: 'health',
+  title: 'Minister for Health and Environment',
+  ministry: 'Health and Environment',
+  scope: 'ministry:health',
+  isLeader: true,
+  avatar: 'GM',
+};
+
+const SAMPLE_LEADER_SPORTS: UserRoleProfile = {
+  id: 'usr-sprt',
+  name: 'Kelvin Shayo',
+  kind: 'sports',
+  title: 'Minister for Sports and Entertainment',
+  ministry: 'Sports and Entertainment',
+  scope: 'ministry:sports',
+  isLeader: true,
+  avatar: 'KS',
 };
 
 const SAMPLE_LEADER_CR: UserRoleProfile = {
@@ -44,26 +77,49 @@ const SAMPLE_LEADER_CR: UserRoleProfile = {
   avatar: 'DK',
 };
 
+const SAMPLE_LEADER_ELECTION: UserRoleProfile = {
+  id: 'usr-elec',
+  name: 'Returning Officer Baraka',
+  kind: 'election',
+  title: 'Chief Election Officer',
+  ministry: 'Constitution, Laws and Good Governance',
+  scope: 'elections:global',
+  isLeader: true,
+  avatar: 'RO',
+};
+
 interface RoleContextType {
   currentProfile: UserRoleProfile;
   setRoleKind: (kind: UserRoleKind) => void;
   actingTitle: string;
   setActingTitle: (title: string) => void;
+  allRolePresets: { kind: UserRoleKind; label: string; profile: UserRoleProfile }[];
 }
 
+const ALL_PRESETS: { kind: UserRoleKind; label: string; profile: UserRoleProfile }[] = [
+  { kind: 'minister', label: 'Minister (Welfare)', profile: SAMPLE_LEADER_MINISTER },
+  { kind: 'executive', label: 'President (Executive)', profile: SAMPLE_LEADER_PRESIDENT },
+  { kind: 'health', label: 'Minister (Health)', profile: SAMPLE_LEADER_HEALTH },
+  { kind: 'sports', label: 'Minister (Sports)', profile: SAMPLE_LEADER_SPORTS },
+  { kind: 'cr', label: 'Class Rep (MD Year 2)', profile: SAMPLE_LEADER_CR },
+  { kind: 'election', label: 'Election Officer', profile: SAMPLE_LEADER_ELECTION },
+  { kind: 'student', label: 'Regular Student', profile: DEFAULT_STUDENT },
+];
+
 const RoleContext = createContext<RoleContextType>({
-  currentProfile: DEFAULT_STUDENT,
+  currentProfile: SAMPLE_LEADER_MINISTER,
   setRoleKind: () => {},
-  actingTitle: 'Student',
+  actingTitle: 'Minister, Welfare, Ceremonies and Disaster Management',
   setActingTitle: () => {},
+  allRolePresets: ALL_PRESETS,
 });
 
 export function RoleProvider({ children }: { children: ReactNode }) {
   const [currentProfile, setCurrentProfile] = useState<UserRoleProfile>(() => {
     const saved = localStorage.getItem('yuni_active_role');
-    if (saved === 'minister') return SAMPLE_LEADER_MINISTER;
-    if (saved === 'cr') return SAMPLE_LEADER_CR;
-    return DEFAULT_STUDENT;
+    const matched = ALL_PRESETS.find((p) => p.kind === saved);
+    if (matched) return matched.profile;
+    return SAMPLE_LEADER_MINISTER;
   });
 
   const [actingTitle, setActingTitle] = useState<string>(currentProfile.title);
@@ -73,20 +129,14 @@ export function RoleProvider({ children }: { children: ReactNode }) {
   }, [currentProfile]);
 
   const setRoleKind = (kind: UserRoleKind) => {
-    let newProfile: UserRoleProfile;
-    if (kind === 'minister') {
-      newProfile = SAMPLE_LEADER_MINISTER;
-    } else if (kind === 'cr') {
-      newProfile = SAMPLE_LEADER_CR;
-    } else {
-      newProfile = DEFAULT_STUDENT;
-    }
+    const preset = ALL_PRESETS.find((p) => p.kind === kind);
+    const newProfile = preset ? preset.profile : DEFAULT_STUDENT;
     setCurrentProfile(newProfile);
     localStorage.setItem('yuni_active_role', kind);
   };
 
   return (
-    <RoleContext.Provider value={{ currentProfile, setRoleKind, actingTitle, setActingTitle }}>
+    <RoleContext.Provider value={{ currentProfile, setRoleKind, actingTitle, setActingTitle, allRolePresets: ALL_PRESETS }}>
       {children}
     </RoleContext.Provider>
   );

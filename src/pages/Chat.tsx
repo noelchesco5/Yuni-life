@@ -33,6 +33,9 @@ interface Message {
   imageUrl?: string;
   sticker?: string;
   location?: { name: string; venueId: string };
+  voiceNote?: { duration: string; waveform: number[] };
+  reactions?: Record<string, number>;
+  userReaction?: string;
 }
 
 export function ChatPage() {
@@ -109,6 +112,7 @@ export function ChatPage() {
       time: '11:15',
       body: 'Habari everyone! Please note that Physiology lecture has shifted to LT 3 at 12:00 today due to laboratory maintenance.',
       location: { name: 'Lecture Theatre 3 (LT 3)', venueId: 'lt-3' },
+      reactions: { 'Hop!': 14, 'Spot': 8 },
     },
     {
       id: 'm-2',
@@ -121,6 +125,7 @@ export function ChatPage() {
       body: 'Anatomy dissection hall specimens are ready for spot revision. Bring clean coats and gloves.',
       imageUrl: '/images/anatomy_lab.jpg',
       location: { name: 'Histology & Pathology Lab', venueId: 'path-lab' },
+      reactions: { 'Hop!': 22, 'Sawa': 19 },
     },
     {
       id: 'm-3',
@@ -130,6 +135,7 @@ export function ChatPage() {
       isMe: true,
       time: '11:22',
       body: 'Asante sana! Are the practical dissection manuals ready at the campus bookshop?',
+      reactions: { 'Hop!': 3 },
     },
     {
       id: 'm-4',
@@ -212,6 +218,43 @@ export function ChatPage() {
     };
     setMessages((prev) => [...prev, newMsg]);
     setShowStickerTray(false);
+  };
+
+  const handleSendVoiceNote = () => {
+    const newMsg: Message = {
+      id: `m-${Date.now()}`,
+      channelId: activeChannelId,
+      senderName: currentProfile.name,
+      senderHandle: `@${currentProfile.name.split(' ')[0].toLowerCase()}`,
+      isMe: true,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      body: 'Clinical voice note: Cranial Nerve examination findings',
+      voiceNote: {
+        duration: '0:22',
+        waveform: [20, 45, 80, 60, 95, 40, 70, 85, 30, 65, 90, 50, 35, 75, 55],
+      },
+      reactions: { 'Hop!': 1 },
+    };
+    setMessages((prev) => [...prev, newMsg]);
+  };
+
+  const handleMessageReaction = (msgId: string, reactionKey: string) => {
+    setMessages((prev) =>
+      prev.map((msg) => {
+        if (msg.id !== msgId) return msg;
+        const currentCount = msg.reactions?.[reactionKey] || 0;
+        const isSelected = msg.userReaction === reactionKey;
+        const nextReactions = {
+          ...(msg.reactions || {}),
+          [reactionKey]: isSelected ? Math.max(0, currentCount - 1) : currentCount + 1,
+        };
+        return {
+          ...msg,
+          userReaction: isSelected ? undefined : reactionKey,
+          reactions: nextReactions,
+        };
+      })
+    );
   };
 
   return (
@@ -354,6 +397,45 @@ export function ChatPage() {
                     <span className="chat-location-cta">Directions →</span>
                   </button>
                 )}
+                {/* Voice Note Player (Spec 09 §7) */}
+                {m.voiceNote && (
+                  <div className="chat-voice-note-card">
+                    <button className="chat-voice-play-btn btn-hop" type="button" aria-label="Play voice note">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                    </button>
+                    <div className="chat-waveform-container">
+                      {m.voiceNote.waveform.map((height, wIdx) => (
+                        <span
+                          key={wIdx}
+                          className="chat-waveform-bar"
+                          style={{ height: `${height}%` }}
+                        />
+                      ))}
+                    </div>
+                    <span className="chat-voice-duration">{m.voiceNote.duration}</span>
+                  </div>
+                )}
+
+                {/* Tactile Message Reactions */}
+                <div className="chat-msg-reactions">
+                  {['Hop!', 'Spot', 'Sawa'].map((rk) => {
+                    const count = m.reactions?.[rk] || 0;
+                    const isSelected = m.userReaction === rk;
+                    return (
+                      <button
+                        key={rk}
+                        type="button"
+                        className={`chat-reaction-chip btn-hop ${isSelected ? 'chat-reaction-chip--active sticker-slapped' : ''}`}
+                        onClick={() => handleMessageReaction(m.id, rk)}
+                      >
+                        <span>{rk}</span>
+                        {count > 0 && <span style={{ opacity: 0.85, fontSize: 10 }}>{count}</span>}
+                      </button>
+                    );
+                  })}
+                </div>
               </article>
             ))
           )}
@@ -368,7 +450,7 @@ export function ChatPage() {
               {['Hop!', 'Mambo!', 'Poa', 'Sawa!', 'Vipi', 'Tuko LT 3', 'On My Way', 'Spot Exam'].map((s) => (
                 <button
                   key={s}
-                  className="chip chip--sm"
+                  className="chip chip--sm btn-hop"
                   onClick={() => handleSendSticker(s)}
                   type="button"
                   style={{ fontSize: 11.5 }}
@@ -388,12 +470,27 @@ export function ChatPage() {
           >
             <button
               type="button"
-              className={`chat-sticker-toggle ${showStickerTray ? 'chat-sticker-toggle--active' : ''}`}
+              className={`chat-sticker-toggle btn-hop ${showStickerTray ? 'chat-sticker-toggle--active' : ''}`}
               onClick={() => setShowStickerTray(!showStickerTray)}
               title="Campus Quick Tags"
               aria-label="Toggle stickers"
             >
               <Graffiti type="sparkle" color="var(--yuni-sun)" width={14} height={14} />
+            </button>
+
+            <button
+              type="button"
+              className="chat-sticker-toggle btn-hop"
+              onClick={handleSendVoiceNote}
+              title="Send clinical case voice note"
+              aria-label="Voice note"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <line x1="12" y1="19" x2="12" y2="23" />
+                <line x1="8" y1="23" x2="16" y2="23" />
+              </svg>
             </button>
 
             <input
@@ -405,7 +502,7 @@ export function ChatPage() {
             />
 
             <button
-              className="chat-send-btn"
+              className="chat-send-btn btn-hop"
               type="submit"
               disabled={!composerText.trim()}
               aria-label="Send message"

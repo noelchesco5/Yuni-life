@@ -54,11 +54,11 @@ interface AuditLogEntry {
 }
 
 export function ConsolePage() {
-  const { currentProfile, actingTitle, setActingTitle } = useUserRole();
+  const { currentProfile, actingTitle, setRoleKind, allRolePresets } = useUserRole();
 
   // Active module modal states
   const [activeModal, setActiveModal] = useState<
-    'announce' | 'emergency' | 'window-manager' | 'academic-desk' | 'safe-reports' | 'audit' | null
+    'announce' | 'emergency' | 'window-manager' | 'academic-desk' | 'safe-reports' | 'audit' | 'elections' | null
   >(null);
 
   // Map Sheet
@@ -77,6 +77,9 @@ export function ConsolePage() {
     slotsAvailable: 4,
     totalSlots: 6,
   });
+
+  // Election certification state (Spec 12)
+  const [electionCertified, setElectionCertified] = useState(false);
 
   // Incoming Venue Claim Requests (Welfare Minister view)
   const [claimsQueue, setClaimsQueue] = useState<VenueClaimRequest[]>([
@@ -117,6 +120,32 @@ export function ConsolePage() {
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  const handleSimulateRushToggle = () => {
+    const isNowOpen = claimWindow.status === 'countdown';
+    setClaimWindow((prev) => ({
+      ...prev,
+      status: isNowOpen ? 'open' : 'countdown',
+      opensInSec: isNowOpen ? 0 : 38,
+    }));
+    showToast(isNowOpen ? '⚡ 12:00:00 REACHED! Venue Rush window is now OPEN for claims!' : 'Claim window reset to countdown state.');
+  };
+
+  const handleCertifyElection = () => {
+    setElectionCertified(true);
+    showToast('MUHASSO Presidential Election Results Certified & Published to Feed!');
+    setAuditLog((prev) => [
+      {
+        id: `log-${Date.now()}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        actor: currentProfile.name,
+        role: actingTitle,
+        action: 'Certified Official Election Handover',
+        target: 'MUHASSO Presidential General Election 2026/2027',
+      },
+      ...prev,
+    ]);
   };
 
   const handleClaimVenue = (venue: Venue) => {
@@ -223,27 +252,19 @@ export function ConsolePage() {
             </div>
           </div>
 
-          <div className="console-delegation-strip">
-            <span className="console-acting-label">Acting as:</span>
-            <span className="badge badge--blue" style={{ fontSize: 10.5 }}>
-              {currentProfile.kind.toUpperCase()}
-            </span>
-            {currentProfile.kind === 'minister' && (
+          <div className="console-delegation-strip" style={{ flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+            <span className="console-acting-label" style={{ fontWeight: 800 }}>Role Switcher:</span>
+            {allRolePresets.map((preset) => (
               <button
-                className="chip chip--sm"
-                onClick={() =>
-                  setActingTitle(
-                    actingTitle === currentProfile.title
-                      ? 'Welfare & Emergency Allocations Officer'
-                      : currentProfile.title
-                  )
-                }
+                key={preset.kind}
+                className={`chip chip--sm btn-hop ${currentProfile.kind === preset.kind ? 'chip--active' : ''}`}
+                onClick={() => setRoleKind(preset.kind)}
                 type="button"
-                style={{ fontSize: 11 }}
+                style={{ fontSize: 11, padding: '3px 9px' }}
               >
-                Switch Delegation ↻
+                {preset.label}
               </button>
-            )}
+            ))}
           </div>
         </section>
 
@@ -251,16 +272,18 @@ export function ConsolePage() {
         <section className="console-rush-card">
           <div className="console-rush-top">
             <div>
-              <span className="badge badge--pending" style={{ fontSize: 10 }}>Live Window</span>
+              <span className={`badge ${claimWindow.status === 'open' ? 'badge--synced' : 'badge--pending'}`} style={{ fontSize: 10 }}>
+                {claimWindow.status === 'open' ? '● Window OPEN' : 'Countdown'}
+              </span>
               <h3 className="console-rush-title">{claimWindow.name}</h3>
               <p className="console-rush-sub">
                 {claimWindow.venueName} · {claimWindow.fairness}
               </p>
             </div>
             <div className="console-rush-timer">
-              <ClockIcon size={13} color="#DC2626" strokeWidth={2.2} />
-              <span className="num" style={{ fontWeight: 800, color: '#DC2626' }}>
-                00:{claimWindow.opensInSec < 10 ? `0${claimWindow.opensInSec}` : claimWindow.opensInSec}
+              <ClockIcon size={13} color={claimWindow.status === 'open' ? 'var(--yuni-teal)' : '#DC2626'} strokeWidth={2.2} />
+              <span className="num" style={{ fontWeight: 800, color: claimWindow.status === 'open' ? 'var(--yuni-teal)' : '#DC2626' }}>
+                {claimWindow.status === 'open' ? 'ACTIVE' : `00:${claimWindow.opensInSec < 10 ? `0${claimWindow.opensInSec}` : claimWindow.opensInSec}`}
               </span>
             </div>
           </div>
@@ -274,17 +297,27 @@ export function ConsolePage() {
             </span>
           </div>
 
-          <button
-            className="btn btn--primary btn--lg"
-            style={{ width: '100%', marginTop: 14 }}
-            onClick={() => {
-              setSelectedVenueForClaim('lt-3');
-              setIsMapOpen(true);
-            }}
-            type="button"
-          >
-            Open Live Claim Map
-          </button>
+          <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+            <button
+              className="btn btn--ghost btn--sm btn-hop"
+              onClick={handleSimulateRushToggle}
+              type="button"
+              style={{ fontSize: 12, flex: 1 }}
+            >
+              ⚡ {claimWindow.status === 'open' ? 'Reset Rush Timer' : 'Simulate 12:00 Rush'}
+            </button>
+            <button
+              className="btn btn--primary btn--sm btn-hop"
+              onClick={() => {
+                setSelectedVenueForClaim('lt-3');
+                setIsMapOpen(true);
+              }}
+              type="button"
+              style={{ fontSize: 12, flex: 1 }}
+            >
+              Open Claim Map →
+            </button>
+          </div>
         </section>
 
         {/* 3. MINISTERIAL & LEADER TOOLS GRID */}
@@ -366,7 +399,7 @@ export function ConsolePage() {
 
             {/* Audit Log */}
             <div
-              className="console-tool-card"
+              className="console-tool-card btn-hop"
               onClick={() => setActiveModal('audit')}
               role="button"
               tabIndex={0}
@@ -376,6 +409,20 @@ export function ConsolePage() {
               </div>
               <strong className="console-tool-name">Audit Log</strong>
               <p className="console-tool-desc">Immutable capability event stream</p>
+            </div>
+
+            {/* Elections & Ballots Desk (Spec 12) */}
+            <div
+              className="console-tool-card btn-hop"
+              onClick={() => setActiveModal('elections')}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="console-tool-icon" style={{ background: 'rgba(35, 71, 197, 0.1)' }}>
+                <BarChartIcon size={20} color="var(--yuni-blue)" strokeWidth={2.2} />
+              </div>
+              <strong className="console-tool-name">Elections & Ballots</strong>
+              <p className="console-tool-desc">Secret ballot voting & certifications</p>
             </div>
           </div>
         </section>
@@ -682,6 +729,95 @@ export function ConsolePage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. ELECTIONS & BALLOTS DESK MODAL (Spec 12) */}
+      {activeModal === 'elections' && (
+        <div className="console-modal-overlay" role="dialog" aria-modal="true">
+          <div className="console-modal-card">
+            <div className="console-modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span className="badge badge--blue">Spec 12</span>
+                <h3 className="console-modal-title">Elections & Secret Ballots Desk</h3>
+              </div>
+              <button
+                className="btn btn--ghost btn--sm btn-hop"
+                onClick={() => setActiveModal(null)}
+                aria-label="Close"
+              >
+                Done
+              </button>
+            </div>
+
+            <div className="console-modal-body">
+              <div style={{ padding: '14px 16px', background: 'var(--surface-2)', borderRadius: 'var(--radius-card)', border: '1px solid var(--border)', marginBottom: 14 }}>
+                <span className="badge badge--synced" style={{ fontSize: 10.5, marginBottom: 6 }}>Active Certified Ballot</span>
+                <h4 style={{ font: '800 16px var(--font-display)', margin: '4px 0 2px' }}>
+                  MUHASSO Presidential General Election 2026/2027
+                </h4>
+                <p className="text-muted" style={{ fontSize: 12.5 }}>
+                  Secret ballot supervised by Constitution Ministry & Electoral Commission. 1 vote per verified student.
+                </p>
+
+                <div style={{ display: 'flex', gap: 14, marginTop: 12, padding: '10px 12px', background: '#FFFFFF', borderRadius: 12, border: '1px solid var(--border)' }}>
+                  <div>
+                    <span className="text-faint" style={{ fontSize: 11 }}>Turnout</span>
+                    <strong style={{ display: 'block', fontSize: 15, color: 'var(--yuni-blue)' }}>68.2%</strong>
+                  </div>
+                  <div>
+                    <span className="text-faint" style={{ fontSize: 11 }}>Verified Ballots</span>
+                    <strong style={{ display: 'block', fontSize: 15 }}>1,842 / 2,700</strong>
+                  </div>
+                  <div>
+                    <span className="text-faint" style={{ fontSize: 11 }}>Status</span>
+                    <strong style={{ display: 'block', fontSize: 15, color: 'var(--yuni-teal)' }}>
+                      {electionCertified ? 'Certified ✓' : 'Auditing'}
+                    </strong>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: 14 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-faint)' }}>CANDIDATE RESULTS:</span>
+                  <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#FFFFFF', borderRadius: 8, border: '1px solid var(--border)' }}>
+                      <div>
+                        <strong>Hon. Josephat Mrope (MD 4)</strong>
+                        <span className="text-faint" style={{ display: 'block', fontSize: 11 }}>Manifesto: Academic Excellence & Clinical Health</span>
+                      </div>
+                      <span className="badge badge--synced" style={{ fontSize: 12, fontWeight: 800 }}>62.4% (1,149)</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#FFFFFF', borderRadius: 8, border: '1px solid var(--border)' }}>
+                      <div>
+                        <strong>Faith Kimaro (BPharm 3)</strong>
+                        <span className="text-faint" style={{ display: 'block', fontSize: 11 }}>Manifesto: Student Welfare & Cafeteria Standards</span>
+                      </div>
+                      <span className="badge badge--blue" style={{ fontSize: 12, fontWeight: 800 }}>37.6% (693)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
+                  <button
+                    className="btn btn--primary btn--sm btn-hop"
+                    onClick={handleCertifyElection}
+                    type="button"
+                    style={{ flex: 1 }}
+                  >
+                    {electionCertified ? '✓ Official Certification Published' : 'Certify Official Handover'}
+                  </button>
+                  <button
+                    className="btn btn--ghost btn--sm btn-hop"
+                    onClick={() => showToast('New Baraza ballot drafted. Ready for Electoral Officer sign-off.')}
+                    type="button"
+                    style={{ flex: 1 }}
+                  >
+                    Draft Baraza Ballot
+                  </button>
+                </div>
               </div>
             </div>
           </div>

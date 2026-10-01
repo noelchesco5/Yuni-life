@@ -345,3 +345,84 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* Voice Note Waveform Player (Spec 09 §7) */
+.chat-voice-note-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 16px;
+  margin-top: 6px;
+  max-width: 280px;
+}
+
+.chat-voice-play-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--yuni-blue);
+  color: #FFFFFF;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.chat-waveform-container {
+  display: flex;
+  align-items: center;
+  gap: 2.5px;
+  height: 24px;
+  flex: 1;
+}
+
+.chat-waveform-bar {
+  width: 3px;
+  background: var(--yuni-blue);
+  border-radius: 2px;
+  opacity: 0.75;
+}
+
+.chat-voice-duration {
+  font: 700 11px var(--font-mono);
+  color: var(--text-faint);
+  flex-shrink: 0;
+}
+
+/* Chat Message Reactions */
+.chat-msg-reactions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  margin-left: 4px;
+}
+
+.chat-reaction-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font: 700 10.5px var(--font-body);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chat-reaction-chip:hover {
+  background: var(--surface-3);
+  border-color: var(--yuni-blue);
+}
+
+.chat-reaction-chip--active {
+  background: var(--yuni-blue);
+  color: #FFFFFF;
+  border-color: var(--yuni-blue);
+}
